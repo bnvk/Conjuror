@@ -1,0 +1,25 @@
+{
+  "author": "Brennan Novak",
+  "name": "beardo",
+  "description": "A dead simple time track app",
+  "version": "0.1.1",
+  "repository": {
+    "url": "https://github.com/bnvk/Beardo"
+  },
+  "main": "./lib/",
+  "keywords": [
+    "time tracking",
+    "time management"
+  ],
+  "bin": {
+    "beardo": "./bin/uppercaseme"
+  },
+  "dependencies": {
+    "fs": "*",
+    "cheerio": "*",
+    "underscore": "*"
+  },
+  "engines": {
+    "node": "*"
+  }
+}
