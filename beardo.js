@@ -1,8 +1,28 @@
-var fs =  require("fs"),
+var fs      = require("fs"),
     cheerio = require("cheerio"),
-    _ = require('underscore');
+    _       = require('underscore'),
+    moment  = require('moment'),
+    argv    = require('argv');
 
 
+// Args
+argv.option({
+    name: 'format',
+    short: 'f',
+    type: 'csv,string',
+    description: 'Defines output formats with csv',
+    example: "'script --format=value' or 'script -f value1,value2'"
+});
+
+var args = argv.run();
+console.log(args.options);
+
+
+// File Manipulation
+var SaveFile = require('./lib/save_file');
+
+
+// Beardo
 var Beardo = {};
 
 // Load Data & Parse
@@ -25,19 +45,91 @@ Beardo.Twirl = function(resource) {
             var lines = data.split("\n");
             delete lines[0];
 
-            var hours = 0;
 
+            // Totals (for tallying)
+            var hours = 0;
             // console.log(resource.schema.fields);
-            // Tally Numbers
+            var outputs = {
+              cli: '',
+              html: ''
+            };
+
+            console.log(args.options.format);
+            console.log(_.indexOf(args.options.format, 'html'))
+
+
+            // Loop Through Items
             _.each(lines, function(line, key) {
-              if (line !== undefined) {
-                hours += parseInt(line.split(',')[1]);
+
+              // ADD MUCH BETTER CHECKING OF EMPTY LINES
+              if (line && line !== undefined) {
+
+                var parts = line.split(',');
+                var date  = parts[0];
+                var hour  = parseInt(parts[1]);
+                var desc  = parts[2];
+                var client = parts[3];
+
+                // Calculate Totals
+                hours += hour;
+
+                // CLI format
+                console.log(date + ' ' + hour + 'hrs ' + desc);
+
+                // HTML format
+                if (_.indexOf(args.options.format, 'html') > -1) {
+                
+                  outputs.html += '<tr>\n';
+                  outputs.html += '   <td>' + date + '</td>\n';
+                  outputs.html += '   <td>' + hour + 'hrs</td>\n';
+                  outputs.html += '   <td>' + desc.trim() + '</td>\n';
+                  outputs.html += '</tr>\n';
+
+                }
+
               }
             });
 
+            console.log('-----------------------------------------------------------------------------');
             console.log('hours worked: ' + hours);
             console.log('monies earned: $' + (hours * 60));
 
+            // Output HTML
+            if (_.indexOf(args.options.format, 'html') > -1) {
+
+              console.log(outputs.html);
+
+              // Get HTML Template
+              var template_path = './html/_template.html';
+
+
+              fs.exists(template_path, function(exists) {
+              	if (exists) {
+              		console.log('Beardo loaded template');
+                  fs.stat(template_path, function(error, stats) {
+                    fs.open(template_path, "r", function(error, fd) {              
+                      var buffer = new Buffer(stats.size);
+                      fs.read(fd, buffer, 0, buffer.length, null, function(error, bytesRead, buffer) {
+                        fs.close(fd);
+            
+                        var template_file = buffer.toString("utf8", 0, buffer.length);
+                        var template_html = _.template(template_file);
+                        var output_html   = template_html({ 
+                          hours_rows: outputs.html, 
+                          hours_total: hours,
+                          money_total: (hours * 60)
+                        });
+
+                        console.log(output_html);
+
+                        var saveFile = new SaveFile(fs, 'html/output.html', output_html);
+            
+                      });
+                    });
+                  });
+                }
+              });
+            }
           });
         });
       });
@@ -53,6 +145,9 @@ Beardo.Twirl = function(resource) {
 
 // Load Schema
 Beardo.Grow = function(schema_file) {
+
+  //var now = moment('1995-12-25', 'MMM D YY');
+  //console.log(now);
 
   fs.exists(schema_file, function(exists) {
   	if (exists) {
@@ -70,7 +165,7 @@ Beardo.Grow = function(schema_file) {
             var json = buffer.toString("utf8", 0, buffer.length);
             var schema = JSON.parse(json);
     
-            console.log(schema[0].name);
+            console.log('item from schema: ' + schema[0].name);
   
             _.each(schema[0].resources, function(resource, key) {
 
