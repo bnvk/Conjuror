@@ -15,8 +15,10 @@
     "beardo": "./bin/uppercaseme"
   },
   "dependencies": {
-    "fs": "*",
+    "argv": "0.0.2",
     "cheerio": "*",
+    "fs": "*",
+    "moment": "^2.9.0",
     "underscore": "*"
   },
   "engines": {
