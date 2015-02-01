@@ -65,7 +65,7 @@ Beardo.Twirl = function(resource) {
               if (line && line !== undefined) {
 
                 var parts = line.split(',');
-                var date  = parts[0];
+                var date  = moment(parts[0]).format('D MMM');
                 var hour  = parseInt(parts[1]);
                 var desc  = parts[2];
                 var client = parts[3];
@@ -97,7 +97,6 @@ Beardo.Twirl = function(resource) {
             // Output HTML
             if (_.indexOf(args.options.format, 'html') > -1) {
 
-              console.log(outputs.html);
 
               // Get HTML Template
               var template_path = './html/_template.html';
@@ -119,8 +118,6 @@ Beardo.Twirl = function(resource) {
                           hours_total: hours,
                           money_total: (hours * 60)
                         });
-
-                        console.log(output_html);
 
                         var saveFile = new SaveFile(fs, 'html/output.html', output_html);
             
@@ -146,9 +143,6 @@ Beardo.Twirl = function(resource) {
 // Load Schema
 Beardo.Grow = function(schema_file) {
 
-  //var now = moment('1995-12-25', 'MMM D YY');
-  //console.log(now);
-
   fs.exists(schema_file, function(exists) {
   	if (exists) {
   
@@ -165,7 +159,7 @@ Beardo.Grow = function(schema_file) {
             var json = buffer.toString("utf8", 0, buffer.length);
             var schema = JSON.parse(json);
     
-            console.log('item from schema: ' + schema[0].name);
+            console.log('Get item from schema: ' + schema[0].name);
   
             _.each(schema[0].resources, function(resource, key) {
 
