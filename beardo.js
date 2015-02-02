@@ -22,6 +22,15 @@ argv.option({
     example: "'script --save=value' or 'script -s January Invoice'"
 });
 
+argv.option({
+    name: 'trim',
+    short: 't',
+    type: 'string',
+    description: 'Trims output by a given string value declared in schema',
+    example: "'script --trim=value' or 'script -t Client Name'"
+});
+
+
 var args = argv.run();
 console.log(args.options);
 
@@ -69,6 +78,7 @@ Beardo.Twirl = function(resource) {
             // Loop Through Items
             _.each(lines, function(line, key) {
 
+
               // ADD MUCH BETTER CHECKING OF EMPTY LINES
               if (line && line !== undefined) {
 
@@ -77,6 +87,12 @@ Beardo.Twirl = function(resource) {
                 var hour  = parseInt(parts[1]);
                 var desc  = parts[2];
                 var client = parts[3];
+
+
+              if (args.options.trim && client === args.options.trim) {
+                console.log('yay client matches: ' + args.options.trim);
+              }
+   
 
                 // Calculate Totals
                 hours += hour;
@@ -95,7 +111,9 @@ Beardo.Twirl = function(resource) {
 
                 }
 
+
               }
+              
             });
 
             console.log('-----------------------------------------------------------------------------');

@@ -4,7 +4,7 @@
   "version": "2015",
   "last_updated": "2015-01-12",
   "resources": [{
-      "path": "hours.csv",
+      "path": "/Users/brennannovak/Data/Beardo/data/hours.csv",
       "schema": {
         "fields": [{
             "name": "date",
