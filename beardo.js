@@ -14,6 +14,14 @@ argv.option({
     example: "'script --format=value' or 'script -f value1,value2'"
 });
 
+argv.option({
+    name: 'save',
+    short: 's',
+    type: 'string',
+    description: 'Defines name to save output files as',
+    example: "'script --save=value' or 'script -s January Invoice'"
+});
+
 var args = argv.run();
 console.log(args.options);
 
@@ -99,11 +107,12 @@ Beardo.Twirl = function(resource) {
 
 
               // Get HTML Template
-              var template_path = './html/_template.html';
+              var template_path = './templates/invoice.html';
 
-
+              // Open
               fs.exists(template_path, function(exists) {
               	if (exists) {
+
               		console.log('Beardo loaded template');
                   fs.stat(template_path, function(error, stats) {
                     fs.open(template_path, "r", function(error, fd) {              
@@ -119,8 +128,14 @@ Beardo.Twirl = function(resource) {
                           money_total: (hours * 60)
                         });
 
-                        var saveFile = new SaveFile(fs, 'html/output.html', output_html);
-            
+                        // Name
+                        var output_name = 'Beardo ' + moment().format('D MMMM YYYY');
+                        if (args.options.save) {
+                          output_name = args.options.save;
+                        }
+
+                        var saveFile = new SaveFile(fs, 'output/' + output_name + '.html', output_html);
+
                       });
                     });
                   });
