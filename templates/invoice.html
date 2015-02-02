@@ -2,28 +2,49 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<title>Invoice</title>
+<title><%= generated_name %></title>
 
+<link href="invoice.css" rel="stylesheet" type="text/css" media="all" /> 
 
 </head>
 <body>
 
-  <h1>Invoice</h1>
+  <div id="container">
+  
+    <div class="left">
+      <h1><%= generated_name %></h1>
+      <h4><%= generated_date %></h4>
+      <a href="mailto:hi@brennannovak.com">hi@brennannovak.com</a><br>
+    </div>
 
-  <div class="">
-    <h3>Brennan Novak</h3>
-    <p><strong>Design. Code. Ideas. Open Source. Freedom.</strong></p>
+    <div class="right text-right">
+      <h1>Brennan Novak</h1>
+      <h3><span class="icon-pencil"></span> <span class="icon-tools"></span> <span class="icon-brain"></span> <span class="icon-lightbulb"></span></h3>
+      <a href="https://brennannovak.com">https://brennannovak.com</a><br>
+    </div>
+
+    <div class="clear"></div>
+    <hr>
+  
+    <h4>Hours Worked</h4>
+    <table width="100%" cellpadding="0" cellspacing="0" border="0">
+    	<%= hours_rows %>
+    </table>
+    <hr>
+
+    <div class="left">
+      <h4>Hours Worked: <%= hours_total %></h4>
+      <h4>Payment Due: $<%= money_total %></h4>
+    </div>
+
+    <div class="right text-right">
+      <h4>Design Code Freedom :)</h4>
+      <em>Invoice made with <a href="https://github.com/bnvk/Beardo" target="_blank">Beardo</a></em>
+    </div>
+
+    <div class="clear"></div>
+
   </div>
-
-  <hr>
-
-  <h3>Hours Worked</h3>
-  <table cellpadding="0" cellspacing="0" border="0">
-  	<%= hours_rows %>
-  </table>
-
-  <h3>Total Hours Worked: <%= hours_total %></h3>
-  <h3>Total Monies Due: $<%= money_total %></h3>
 
 </body>
 </html>
