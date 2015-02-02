@@ -11,7 +11,7 @@ argv.option({
     short: 'f',
     type: 'csv,string',
     description: 'Defines output formats with csv',
-    example: "'script --format=value' or 'script -f value1,value2'"
+    example: "'beardo.js --format=value' or 'beardo.js -f value1,value2'"
 });
 
 argv.option({
@@ -19,7 +19,7 @@ argv.option({
     short: 's',
     type: 'string',
     description: 'Defines name to save output files as',
-    example: "'script --save=value' or 'script -s January Invoice'"
+    example: "'beardo.js --save=value' or 'beardo.js -s January Invoice'"
 });
 
 argv.option({
@@ -27,7 +27,7 @@ argv.option({
     short: 't',
     type: 'string',
     description: 'Trims output by a given string value declared in schema',
-    example: "'script --trim=value' or 'script -t Client Name'"
+    example: "'beardo.js --trim=value' or 'beardo.js -t Client'"
 });
 
 
@@ -62,63 +62,79 @@ Beardo.Twirl = function(resource) {
             var lines = data.split("\n");
             delete lines[0];
 
+            var hours = 0;
 
             // Totals (for tallying)
-            var hours = 0;
             // console.log(resource.schema.fields);
             var outputs = {
+              totals: {
+                hours: 0,
+                money: 0.00,
+              },
               cli: '',
               html: ''
             };
 
-            console.log(args.options.format);
-            console.log(_.indexOf(args.options.format, 'html'))
+
+            // Make Totals
+            var increment_output = function(item) {
+
+              outputs.totals.hours += item.hour;
+              outputs.totals.money += (item.hour * 60);
+
+              // CLI format
+              outputs.cli += item.date + ' ' + item.hour + 'hrs ' + item.desc + '\n';
+
+              // HTML format
+              if (_.indexOf(args.options.format, 'html') > -1) {          
+                outputs.html += '<tr>\n';
+                outputs.html += '   <td>' + item.date + '</td>\n';
+                outputs.html += '   <td class="text-right">' + item.hour + '</td>\n';
+                outputs.html += '   <td class="text-left"> hrs</td>\n';
+                outputs.html += '   <td>' + item.desc + '</td>\n';
+                outputs.html += '</tr>\n';
+              }
+            };
 
 
             // Loop Through Items
             _.each(lines, function(line, key) {
 
-
-              // ADD MUCH BETTER CHECKING OF EMPTY LINES
+              // FIXME: ADD MUCH BETTER CHECKING OF EMPTY LINES
               if (line && line !== undefined) {
 
                 var parts = line.split(',');
-                var date  = moment(parts[0]).format('D MMM');
-                var hour  = parseInt(parts[1]);
-                var desc  = parts[2];
-                var client = parts[3];
 
-
-              if (args.options.trim && client === args.options.trim) {
-                console.log('yay client matches: ' + args.options.trim);
-              }
-   
-
-                // Calculate Totals
-                hours += hour;
-
-                // CLI format
-                console.log(date + ' ' + hour + 'hrs ' + desc);
-
-                // HTML format
-                if (_.indexOf(args.options.format, 'html') > -1) {
-                
-                  outputs.html += '<tr>\n';
-                  outputs.html += '   <td>' + date + '</td>\n';
-                  outputs.html += '   <td>' + hour + 'hrs</td>\n';
-                  outputs.html += '   <td>' + desc.trim() + '</td>\n';
-                  outputs.html += '</tr>\n';
-
+                var item = {
+                  date: moment(parts[0]).format('D MMM'),
+                  hour: parseFloat(parts[1]),
+                  desc: parts[2].trim(),
+                  client: parts[3].trim()
                 }
 
-
-              }
-              
+                // Should Filter?
+                if (args.options.trim !== undefined) {
+                  if (args.options.trim === item.client) {
+                    increment_output(item);
+                  } else {
+                    // FIXME: accept other types of filters
+                    outputs.cli += item.date + ' client ' + item.client + ' did not match' + args.options.trim + '\n';
+                  }
+                } else {
+                  increment_output(item);
+                }
+              }  
             });
 
+
+            // FIXME: OUTPUT STUFF (Refactor out)
             console.log('-----------------------------------------------------------------------------');
-            console.log('hours worked: ' + hours);
-            console.log('monies earned: $' + (hours * 60));
+            console.log('Output Formats: ' + args.options.format);
+            console.log('-----------------------------------------------------------------------------');
+            console.log(outputs.cli);
+            console.log('-----------------------------------------------------------------------------');
+            console.log('Total hours worked: ' + outputs.totals.hours);
+            console.log('monies earned: $' + outputs.totals.money);
 
             // Output HTML
             if (_.indexOf(args.options.format, 'html') > -1) {
@@ -137,20 +153,22 @@ Beardo.Twirl = function(resource) {
                       var buffer = new Buffer(stats.size);
                       fs.read(fd, buffer, 0, buffer.length, null, function(error, bytesRead, buffer) {
                         fs.close(fd);
-            
-                        var template_file = buffer.toString("utf8", 0, buffer.length);
-                        var template_html = _.template(template_file);
-                        var output_html   = template_html({ 
-                          hours_rows: outputs.html, 
-                          hours_total: hours,
-                          money_total: (hours * 60)
-                        });
 
-                        // Name
-                        var output_name = 'Beardo ' + moment().format('D MMMM YYYY');
+                        // Invoice Name
+                        var output_name = 'Invoice: ' + moment().format('D MMMM YYYY');
                         if (args.options.save) {
                           output_name = args.options.save;
                         }
+            
+                        var template_file = buffer.toString("utf8", 0, buffer.length);
+                        var template_html = _.template(template_file);
+                        var output_html   = template_html({
+                          generated_name: output_name,
+                          generated_date: moment().format('Do MMMM, YYYY'),
+                          hours_rows: outputs.html,
+                          hours_total: outputs.totals.hours,
+                          money_total: outputs.totals.money
+                        });
 
                         var saveFile = new SaveFile(fs, 'output/' + output_name + '.html', output_html);
 
@@ -218,5 +236,5 @@ Beardo.Grow = function(schema_file) {
 
 
 // Start It Up
-Beardo.Grow('hours.json');
+Beardo.Grow('data/hours.json');
 
