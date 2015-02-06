@@ -7,29 +7,37 @@ var fs      = require("fs"),
 
 // Args
 argv.option({
-    name: 'format',
-    short: 'f',
-    type: 'csv,string',
-    description: 'Defines output formats with csv',
-    example: "'beardo.js --format=value' or 'beardo.js -f value1,value2'"
+  name: 'format',
+  short: 'f',
+  type: 'csv,string',
+  description: 'Defines output formats with csv',
+  example: "'beardo.js --format=value' or 'beardo.js -f value1,value2'"
 });
 
 argv.option({
-    name: 'save',
-    short: 's',
-    type: 'string',
-    description: 'Defines name to save output files as',
-    example: "'beardo.js --save=value' or 'beardo.js -s January Invoice'"
-});
+  name: 'save',
+  short: 's',
+  type: 'string',
+  description: 'Defines name to save output files as',
+  example: "'beardo.js --save=value' or 'beardo.js -s January Invoice'"
+}); 
 
 argv.option({
-    name: 'trim',
-    short: 't',
-    type: 'string',
-    description: 'Trims output by a given string value declared in schema',
-    example: "'beardo.js --trim=value' or 'beardo.js -t Client'"
+  name: 'date',
+  short: 'd',
+  type: 'string',
+  description: 'Returns only by current date (currently month only)',
+  example: "'beardo.js --date=value' or 'beardo.js -d January or Jan or 01'"
 });
 
+
+argv.option({
+  name: 'trim',
+  short: 't',
+  type: 'list,string',
+  description: 'Trims output by a given string value declared in schema',
+  example: "'beardo.js --trim=value' or 'beardo.js -t Client'"
+});
 
 var args = argv.run();
 console.log(args.options);
@@ -41,6 +49,44 @@ var SaveFile = require('./lib/save_file');
 
 // Beardo
 var Beardo = {};
+
+
+Beardo.Date = function(parts) {
+  if (args.options.date !== undefined) {
+
+    var date_trim = args.options.date.toLowerCase();
+    var date_full = moment(parts[0]).format('MMMM').toLowerCase();
+    var date_abbr = moment(parts[0]).format('MMM').toLowerCase();
+    var date_numb = moment(parts[0]).format('MM').toLowerCase();
+
+    if (_.indexOf([date_full, date_abbr, date_numb], date_trim) > -1) {
+      //console.log('date matches filter: ' + date_trim)
+      return true;
+    } else {
+      return false;
+    }
+  } else { 
+    return true;
+  }
+};
+
+
+Beardo.Trim = function(parts) {
+  if (args.options.trim !== undefined) {
+
+    var part = parts[3].trim();
+
+    if (_.indexOf(args.options.trim, part) > -1) {
+      //console.log('client: ' + part + ' matches: ' + args.options.trim);
+      return true;
+    } else {
+      return false;
+    }
+  } else {
+    return true;
+  }
+};
+
 
 // Load Data & Parse
 Beardo.Twirl = function(resource) {
@@ -83,7 +129,7 @@ Beardo.Twirl = function(resource) {
               outputs.totals.money += (item.hour * 60);
 
               // CLI format
-              outputs.cli += item.date + ' ' + item.hour + 'hrs ' + item.desc + '\n';
+              outputs.cli += item.date + ' ' + item.hour + ' \t' + item.client + ' \t' + item.desc + '\n';
 
               // HTML format
               if (_.indexOf(args.options.format, 'html') > -1) {          
@@ -105,25 +151,22 @@ Beardo.Twirl = function(resource) {
 
                 var parts = line.split(',');
 
-                var item = {
-                  date: moment(parts[0]).format('D MMM'),
-                  hour: parseFloat(parts[1]),
-                  desc: parts[2].trim(),
-                  client: parts[3].trim()
-                }
-
                 // Should Filter?
-                if (args.options.trim !== undefined) {
-                  if (args.options.trim === item.client) {
-                    increment_output(item);
-                  } else {
-                    // FIXME: accept other types of filters
-                    outputs.cli += item.date + ' client ' + item.client + ' did not match' + args.options.trim + '\n';
+                var check_date = Beardo.Date(parts);
+                var check_trim = Beardo.Trim(parts);
+
+                if (_.indexOf([check_date, check_trim], false) === -1) {
+
+                  var item_output = {
+                    date: moment(parts[0]).format('D MMM'),
+                    hour: parseFloat(parts[1]),
+                    desc: parts[2].trim(),
+                    client: parts[3].trim()
                   }
-                } else {
-                  increment_output(item);
+
+                  increment_output(item_output);
                 }
-              }  
+              }
             });
 
 
@@ -149,7 +192,7 @@ Beardo.Twirl = function(resource) {
 
               		console.log('Beardo loaded template');
                   fs.stat(template_path, function(error, stats) {
-                    fs.open(template_path, "r", function(error, fd) {              
+                    fs.open(template_path, "r", function(error, fd) {
                       var buffer = new Buffer(stats.size);
                       fs.read(fd, buffer, 0, buffer.length, null, function(error, bytesRead, buffer) {
                         fs.close(fd);
@@ -159,7 +202,7 @@ Beardo.Twirl = function(resource) {
                         if (args.options.save) {
                           output_name = args.options.save;
                         }
-            
+
                         var template_file = buffer.toString("utf8", 0, buffer.length);
                         var template_html = _.template(template_file);
                         var output_html   = template_html({
@@ -230,9 +273,10 @@ Beardo.Grow = function(schema_file) {
     else {
       console.log('awwww no schema');
     }
-  
+
   });
 };
+
 
 
 // Start It Up
