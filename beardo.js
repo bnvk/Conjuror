@@ -7,16 +7,24 @@ var fs      = require("fs"),
 
 // Args
 argv.option({
+  name: 'input',
+  short: 'i',
+  type: 'string',
+  description: 'Defines schema file to open',
+  example: "'beardo.js --schema=value' or 'beardo.js -s data/hours.json"
+});
+
+argv.option({
   name: 'format',
   short: 'f',
   type: 'csv,string',
-  description: 'Defines output formats with csv',
+  description: 'Defines output formats with html,cli',
   example: "'beardo.js --format=value' or 'beardo.js -f value1,value2'"
 });
 
 argv.option({
-  name: 'save',
-  short: 's',
+  name: 'output',
+  short: 'o',
   type: 'string',
   description: 'Defines name to save output files as',
   example: "'beardo.js --save=value' or 'beardo.js -s January Invoice'"
@@ -40,7 +48,6 @@ argv.option({
 });
 
 var args = argv.run();
-console.log(args.options);
 
 
 // File Manipulation
@@ -198,9 +205,9 @@ Beardo.Twirl = function(resource) {
                         fs.close(fd);
 
                         // Invoice Name
-                        var output_name = 'Invoice: ' + moment().format('D MMMM YYYY');
-                        if (args.options.save) {
-                          output_name = args.options.save;
+                        var output_name = 'Beardo - ' + moment().format('D MMMM YYYY');
+                        if (args.options.output) {
+                          output_name = args.options.output;
                         }
 
                         var template_file = buffer.toString("utf8", 0, buffer.length);
@@ -280,5 +287,9 @@ Beardo.Grow = function(schema_file) {
 
 
 // Start It Up
-Beardo.Grow('data/hours.json');
+if (args.options.input !== undefined) {
+  Beardo.Grow(args.options.input);
+} else {
+  console.log('404 No beard found \nAre you sure you specified an --input -i value');
+}
 
