@@ -1,0 +1,36 @@
+[{
+  "name": "hours",
+  "title": "This collection represents hours worked for various clients",
+  "version": "2015",
+  "last_updated": "2015-02-08",
+  "resources": [{
+      "path": "_template.csv",
+      "schema": {
+        "fields": [{
+            "name": "date",
+            "title": "date when work was performed",
+            "type": "date"
+          },{
+            "name": "time",
+            "title": "the amount of time worked. Represent in hours as floating point '8' or '0.5' value",
+            "type": "number"
+          },{
+            "name": "description",
+            "title": "description of work performed",
+            "type": "string"
+          },{
+            "name": "client",
+            "title": "name of client worked for",
+            "type": "string"
+          },{
+            "name": "location",
+            "title": "place where work was performed",
+            "type": "string"
+          },{
+            "name": "rate",
+            "title": "the rate to invoice at",
+            "type": "number"
+          }]
+      }
+  }]
+}]
