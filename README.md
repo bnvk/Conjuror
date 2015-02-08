@@ -15,13 +15,17 @@ Currently just type `node beardo.js` into your command line.
 
 ## Flags
 
-* --help    -h  shows commands
-* --format  -f  allows you output different formats (html, cli)
-* --save    -s  name of file being output
-* --trim    -t  filters by an item
+Flag | Short Flag | Behavior
+------------ | ------------- | -------------
+--help | -h | shows list of commands
+--input | -i | selects `data.json` schema file to open up
+--format | -f | allows you to choose different output formats (currently html, cli)
+--output | -o | specif `Name of File.html` being output
+--date | -d | filters by date `'February, Feb, 01` allows case insensitive 
+--trim | -t | filters by an item like 'client' (currently hardcoded value)
 
 
-### Oaky, What's With the Weird Name?
+### Okay, What's With the Weird Name?
 
 Did you know beards could tell time? No truly, Beards are a magical wonder of nature. Much like the rings of old growth tree, each and every beard contains a unique record of the health and life lived by the beard grower. Was the grower properly nourished throughout the cold winter months? Do they have a health sex life? Do they drink too much alcohol? A good proper full beard knows all. 
 
