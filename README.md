@@ -7,13 +7,33 @@ Beardo, the magical time tracking wizard who knows how you spend all your time a
 
 ## Data
 
-The data which Beardo consumes is simple CSV data that also implements [Data Protocols](http://dataprotocols.org) and was inspired by [this blog post](http://blog.okfn.org/2013/07/02/git-and-github-for-data/) from Rufus Pollock of [OKFN](http://okfn.org)
+The data which Beardo consumes is simple CSV data that also implements [Data Protocols](http://dataprotocols.org) and was inspired by [this blog post](http://blog.okfn.org/2013/07/02/git-and-github-for-data/) from Rufus Pollock of [OKFN](http://okfn.org). Currently Beardo supports & makes bare minimum use of [JSON Table Schema](http://dataprotocols.org/json-table-schema/). 
+
+#### Getting Started
+
+In order to use Beardo to keep track of something like billable hours / freelance work, locate the following two files:
+
+* `data/_template.csv`
+* `data/_template.json`
+
+You're going to want to make a copy of both files and rename them something like `clients.csv` or whatever suits your needs. You can add extra values to the Schema & CSV columns as you see it.
+
+Once the Schema & CSV matches, you can start adding data items to the CSV such as:
+
+```
+date, time, description, client, location, rate
+2015-02-07, 2, improved importing of files, beardo, cafe, 0.00
+2015-02-08, 2, updated commands & documentation, beardo, home, 0.00
+```
+
+Currently, you need to need manually add items to the CSV, which is less than ideal, but an easy time tracker command is next on the agenda, we promise!
+
 
 ## Commands
 
-Currently just type `node beardo.js` into your command line with one of the following flags
+To perform reports just type `node beardo.js` into your command line with one of the following flags
 
-### Flags
+#### Flags
 
 Flag | Short Flag | Behavior
 ------------ | ------------- | -------------
