@@ -4,7 +4,7 @@
   "version": "2015",
   "last_updated": "2015-02-08",
   "resources": [{
-      "path": "_template.csv",
+      "path": "data/_template.csv",
       "schema": {
         "fields": [{
             "name": "date",
