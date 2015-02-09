@@ -28,7 +28,7 @@ argv.option({
   type: 'string',
   description: 'Defines name to save output files as',
   example: "'beardo.js --save=value' or 'beardo.js -s January Invoice'"
-}); 
+});
 
 argv.option({
   name: 'date',
@@ -72,7 +72,7 @@ Beardo.Date = function(parts) {
     } else {
       return false;
     }
-  } else { 
+  } else {
     return true;
   }
 };
@@ -102,15 +102,15 @@ Beardo.Twirl = function(resource) {
   	if (exists) {
 
   		console.log('Beardo is twirling some data');
-  
+
       fs.stat(resource.path, function(error, stats) {
         fs.open(resource.path, "r", function(error, fd) {
-  
+
           var buffer = new Buffer(stats.size);
-  
+
           fs.read(fd, buffer, 0, buffer.length, null, function(error, bytesRead, buffer) {
             fs.close(fd);
-  
+
             var data = buffer.toString("utf8", 0, buffer.length);
             var lines = data.split("\n");
             delete lines[0];
@@ -139,7 +139,7 @@ Beardo.Twirl = function(resource) {
               outputs.cli += item.date + ' ' + item.hour + ' \t' + item.client + ' \t' + item.desc + '\n';
 
               // HTML format
-              if (_.indexOf(args.options.format, 'html') > -1) {          
+              if (_.indexOf(args.options.format, 'html') > -1) {
                 outputs.html += '<tr>\n';
                 outputs.html += '   <td>' + item.date + '</td>\n';
                 outputs.html += '   <td class="text-right">' + item.hour + '</td>\n';
@@ -233,9 +233,9 @@ Beardo.Twirl = function(resource) {
       });
   	}
   	else {
-      console.log('awwww no data');  
+      console.log('awwww no data');
   	}
-  
+
   });
 
 };
@@ -246,36 +246,36 @@ Beardo.Grow = function(schema_file) {
 
   fs.exists(schema_file, function(exists) {
   	if (exists) {
-  
+
   		console.log('Splendid schema exists open it up');
-  
+
       fs.stat(schema_file, function(error, stats) {
         fs.open(schema_file, "r", function(error, fd) {
-  
+
           var buffer = new Buffer(stats.size);
-  
+
           fs.read(fd, buffer, 0, buffer.length, null, function(error, bytesRead, buffer) {
             fs.close(fd);
-  
+
             var json = buffer.toString("utf8", 0, buffer.length);
             var schema = JSON.parse(json);
-    
+
             console.log('Get item from schema: ' + schema[0].name);
-  
+
             _.each(schema[0].resources, function(resource, key) {
 
-              console.log('Twirl resouce: ' + resource.path);
+              console.log('Twirl resource: ' + resource.path);
 
               // Open Data
               Beardo.Twirl(resource);
 
             });
-  
+
           });
-  
+
         });
       });
-  
+
     }
     else {
       console.log('awwww no schema');
