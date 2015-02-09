@@ -133,7 +133,7 @@ Beardo.Twirl = function(resource) {
             var increment_output = function(item) {
 
               outputs.totals.hours += item.hour;
-              outputs.totals.money += (item.hour * 60);
+              outputs.totals.money += (item.hour * item.rate);
 
               // CLI format
               outputs.cli += item.date + ' ' + item.hour + ' \t' + item.client + ' \t' + item.desc + '\n';
@@ -164,11 +164,14 @@ Beardo.Twirl = function(resource) {
 
                 if (_.indexOf([check_date, check_trim], false) === -1) {
 
+
+                  // This should probably be based on the json schema.
                   var item_output = {
                     date: moment(parts[0]).format('D MMM'),
                     hour: parseFloat(parts[1]),
                     desc: parts[2].trim(),
-                    client: parts[3].trim()
+                    client: parts[3].trim(),
+                    rate: parseFloat(parts[5].trim())
                   }
 
                   increment_output(item_output);
