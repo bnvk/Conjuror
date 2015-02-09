@@ -11,9 +11,9 @@ The data which Beardo consumes is simple CSV data that also implements [Data Pro
 
 ## Commands
 
-Currently just type `node beardo.js` into your command line.
+Currently just type `node beardo.js` into your command line with one of the following flags
 
-## Flags
+### Flags
 
 Flag | Short Flag | Behavior
 ------------ | ------------- | -------------
@@ -23,6 +23,14 @@ Flag | Short Flag | Behavior
 --output | -o | specif `Name of File.html` being output
 --date | -d | filters by date `'February, Feb, 01` allows case insensitive 
 --trim | -t | filters by an item like 'client' (currently hardcoded value)
+
+**Example (trim)**
+
+Run from CLI `node beardo.js --input data/clients.json --trim client-name`
+
+**Example (output & date)**
+
+Run from CLI `node beardo.js -i data/clients.json -o Feb Invoice -t client-name --date Feb`
 
 
 ### Okay, What's With the Weird Name?
