@@ -2,7 +2,9 @@ var fs      = require("fs"),
     cheerio = require("cheerio"),
     _       = require('underscore'),
     moment  = require('moment'),
-    argv    = require('argv');
+    argv    = require('argv'),
+    net     = require('net'),
+    repl    = require('repl');
 
 
 // Args
@@ -57,24 +59,69 @@ var SaveFile = require('./lib/save_file');
 // Beardo
 var Beardo = {};
 
+Beardo.Date = {};
 
-Beardo.Date = function(parts) {
-  if (args.options.date !== undefined) {
+Beardo.Date.full = function(date) {
 
-    var date_trim = args.options.date.toLowerCase();
-    var date_full = moment(parts[0]).format('MMMM').toLowerCase();
-    var date_abbr = moment(parts[0]).format('MMM').toLowerCase();
-    var date_numb = moment(parts[0]).format('MM').toLowerCase();
+  var this_date = date.replace(/-/g,'');
+  var filter_date = args.options.date.replace(/-/g, '');
 
-    if (_.indexOf([date_full, date_abbr, date_numb], date_trim) > -1) {
-      //console.log('date matches filter: ' + date_trim)
-      return true;
-    } else {
-      return false;
-    }
-  } else {
+  if (this_date >= filter_date) {
+    //console.log('this date: 'this_date + ' is greater than filter date: ' + filter_date);
     return true;
+  } else {
+    return false;
   }
+};
+
+Beardo.Date.year_month = function(date) {
+
+  if (date.indexOf(args.options.date) > -1) {
+    //console.log('date filter by year_month ' + date);
+    return true;
+  } else {
+    return false;
+  }
+};
+
+Beardo.Date.month_day = function(date) {
+ 
+  if (date.indexOf(args.options.date) > -1) {
+    //console.log('date filter by month_day ' + date);
+    return true;
+  } else {
+    return false;
+  }
+};
+
+Beardo.Date.year = function(date) {
+
+  if (date.indexOf(args.options.date) > -1) {
+    //console.log('date filter by year ' + date);
+    return true;
+  } else {
+    return false;
+  }
+};
+
+Beardo.Date.month = function(date) {
+
+  var date_trim = args.options.date.toLowerCase();
+  var date_full = moment(date).format('MMMM').toLowerCase();
+  var date_abbr = moment(date).format('MMM').toLowerCase();
+  var date_numb = moment(date).format('MM').toLowerCase();
+
+  if (_.indexOf([date_full, date_abbr, date_numb], date_trim) > -1) {
+    //console.log('date matches filter: ' + date_trim)
+    return true;
+  } else {
+    return false;
+  }
+};
+
+
+Beardo.Date.none = function(parts) {
+  console.log('no date filtering performed');
 };
 
 
@@ -150,6 +197,32 @@ Beardo.Twirl = function(resource) {
             };
 
 
+            // Filter by Date / Type
+            var date_filter = 'none';
+
+            if (args.options.date !== undefined) {
+
+              var is_date_full        = /[0-9]{4}-[0-9]{2}-[0-9]{2}/;
+              var is_date_year_month  = /[0-9]{4}-[0-9]{2}/;
+              var is_date_month_day   = /[0-9]{2}-[0-9]{2}/;
+              var is_date_year        = /[0-9]{4}/;
+
+              if (is_date_full.exec(args.options.date)) {
+                date_filter = 'full';
+              } else if (is_date_year_month.exec(args.options.date)) {
+                date_filter = 'year_month';
+              } else if (is_date_month_day.exec(args.options.date)) {
+                date_filter = 'month_day';
+              } else if (is_date_year.exec(args.options.date)) {
+                date_filter = 'year';
+              } else {
+                date_filter = 'month';
+              }
+
+              console.log('filter date by: ' + date_filter);
+            }
+
+
             // Loop Through Items
             _.each(lines, function(line, key) {
 
@@ -158,8 +231,8 @@ Beardo.Twirl = function(resource) {
 
                 var parts = line.split(',');
 
-                // Should Filter?
-                var check_date = Beardo.Date(parts);
+                // Filter Date & Trim
+                var check_date = Beardo.Date[date_filter](parts[0]);
                 var check_trim = Beardo.Trim(parts);
 
                 if (_.indexOf([check_date, check_trim], false) === -1) {
@@ -187,7 +260,7 @@ Beardo.Twirl = function(resource) {
             console.log(outputs.cli);
             console.log('-----------------------------------------------------------------------------');
             console.log('Total hours worked: ' + outputs.totals.hours);
-            console.log('monies earned: $' + outputs.totals.money);
+            console.log('Total monies earned: $' + outputs.totals.money);
 
             // Output HTML
             if (_.indexOf(args.options.format, 'html') > -1) {
