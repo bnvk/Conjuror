@@ -85,7 +85,7 @@ Beardo.Date.year_month = function(date) {
 };
 
 Beardo.Date.month_day = function(date) {
- 
+
   if (date.indexOf(args.options.date) > -1) {
     //console.log('date filter by month_day ' + date);
     return true;
@@ -179,21 +179,49 @@ Beardo.Twirl = function(resource) {
             // Make Totals
             var increment_output = function(item) {
 
-              outputs.totals.hours += item.hour;
-              outputs.totals.money += (item.hour * item.rate);
+              outputs.totals.hours += item.time;
+              outputs.totals.money += (item.time * item.rate);
 
               // CLI format
-              outputs.cli += item.date + ' ' + item.hour + ' \t' + item.client + ' \t' + item.desc + '\n';
+              outputs.cli += item.date + ' ' + item.time + ' \t' + item.client + ' \t' + item.description + '\n';
 
               // HTML format
               if (_.indexOf(args.options.format, 'html') > -1) {
                 outputs.html += '<tr>\n';
                 outputs.html += '   <td>' + item.date + '</td>\n';
-                outputs.html += '   <td class="text-right">' + item.hour + '</td>\n';
+                outputs.html += '   <td class="text-right">' + item.time + '</td>\n';
                 outputs.html += '   <td class="text-left"> hrs</td>\n';
-                outputs.html += '   <td>' + item.desc + '</td>\n';
+                outputs.html += '   <td>' + item.description + '</td>\n';
                 outputs.html += '</tr>\n';
               }
+            };
+
+            var mapLineToSchema = function(line, schema, fields){
+              // line is the line being processed,
+              // schema is the schema provided in the resource,
+              // fields is the fields required in the output, if blank it
+              // defaults to everything in the schema.
+              var parts = line.split(',');
+              var lineItem = {};
+
+              _.each(schema.fields, function(field, index){
+                if (fields === undefined || fields.indexOf(field.name) !== -1){
+                  var parsed;
+
+                  if (field.type === 'date') {
+                    parsed = moment(parts[index]).format('D MMM');
+                  }
+                  if (field.type === 'number'){
+                    parsed = parseFloat(parts[index]);
+                  }
+                  if (field.type === 'string'){
+                    parsed = parts[index].trim();
+                  }
+                  lineItem[field.name] = parsed;
+
+                }
+              });
+              return lineItem;
             };
 
 
@@ -222,7 +250,6 @@ Beardo.Twirl = function(resource) {
               console.log('filter date by: ' + date_filter);
             }
 
-
             // Loop Through Items
             _.each(lines, function(line, key) {
 
@@ -237,15 +264,7 @@ Beardo.Twirl = function(resource) {
 
                 if (_.indexOf([check_date, check_trim], false) === -1) {
 
-
-                  // This should probably be based on the json schema.
-                  var item_output = {
-                    date: moment(parts[0]).format('D MMM'),
-                    hour: parseFloat(parts[1]),
-                    desc: parts[2].trim(),
-                    client: parts[3].trim(),
-                    rate: parseFloat(parts[5].trim())
-                  }
+                  var item_output = mapLineToSchema(line, resource.schema);
 
                   increment_output(item_output);
                 }
