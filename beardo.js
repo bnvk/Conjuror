@@ -1,10 +1,11 @@
-var fs      = require("fs"),
-    cheerio = require("cheerio"),
-    _       = require('underscore'),
-    moment  = require('moment'),
-    argv    = require('argv'),
-    net     = require('net'),
-    repl    = require('repl');
+var fs      = require("fs");
+var cheerio = require("cheerio");
+var _       = require('underscore');
+var moment  = require('moment');
+var argv    = require('argv');
+var net     = require('net');
+var path    = require('path');
+var repl    = require('repl');
 
 
 // Args
@@ -143,15 +144,17 @@ Beardo.Trim = function(parts) {
 
 
 // Load Data & Parse
-Beardo.Twirl = function(resource) {
+Beardo.Twirl = function(path, resource) {
 
-  fs.exists(resource.path, function(exists) {
+  var resource_file = path + '/' + resource.path;
+
+  fs.exists(resource_file, function(exists) {
   	if (exists) {
 
   		console.log('Beardo is twirling some data');
 
-      fs.stat(resource.path, function(error, stats) {
-        fs.open(resource.path, "r", function(error, fd) {
+      fs.stat(resource_file, function(error, stats) {
+        fs.open(resource_file, "r", function(error, fd) {
 
           var buffer = new Buffer(stats.size);
 
@@ -344,6 +347,8 @@ Beardo.Grow = function(schema_file) {
 
   		console.log('Splendid schema exists open it up');
 
+      var path = require('path').dirname(schema_file);
+
       fs.stat(schema_file, function(error, stats) {
         fs.open(schema_file, "r", function(error, fd) {
 
@@ -357,12 +362,13 @@ Beardo.Grow = function(schema_file) {
 
             console.log('Get item from schema: ' + schema[0].name);
 
+            // If Schema Contains Multiple
             _.each(schema[0].resources, function(resource, key) {
 
               console.log('Twirl resource: ' + resource.path);
 
               // Open Data
-              Beardo.Twirl(resource);
+              Beardo.Twirl(path, resource);
 
             });
 
