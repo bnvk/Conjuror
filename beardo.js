@@ -220,6 +220,13 @@ Beardo.Twirl = function(path, resource) {
                   if (field.type === 'string'){
                     parsed = parts[index].trim();
                   }
+                  if (field.type === 'boolean'){
+                    parsed = parts[index];
+                    if (parsed === 'yes') parsed = true;
+                    else if (parsed === 'no') parse = false;
+                  }
+
+                  // For Output
                   lineItem[field.name] = parsed;
 
                 }
