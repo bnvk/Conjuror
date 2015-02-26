@@ -24,5 +24,8 @@
   },
   "engines": {
     "node": "*"
+  },
+  "devDependencies": {
+    "csv": "^0.4.1"
   }
 }

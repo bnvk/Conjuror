@@ -4,6 +4,7 @@ var fs      = require("fs"),
     moment  = require('moment'),
     argv    = require('argv'),
     net     = require('net'),
+    csv     = require('csv'),
     repl    = require('repl');
 
 
@@ -141,7 +142,6 @@ Beardo.Trim = function(parts) {
   }
 };
 
-
 // Load Data & Parse
 Beardo.Twirl = function(resource) {
 
@@ -159,8 +159,8 @@ Beardo.Twirl = function(resource) {
             fs.close(fd);
 
             var data = buffer.toString("utf8", 0, buffer.length);
-            var lines = data.split("\n");
-            delete lines[0];
+            // var lines = data.split("\n");
+            // delete lines[0];
 
             var hours = 0;
 
@@ -196,12 +196,12 @@ Beardo.Twirl = function(resource) {
               }
             };
 
-            var mapLineToSchema = function(line, schema, fields){
+            var mapLineToSchema = function(parts, schema, fields){
               // line is the line being processed,
               // schema is the schema provided in the resource,
               // fields is the fields required in the output, if blank it
               // defaults to everything in the schema.
-              var parts = line.split(',');
+              // var parts = line.split(',');
               var lineItem = {};
 
               _.each(schema.fields, function(field, index){
@@ -223,7 +223,6 @@ Beardo.Twirl = function(resource) {
               });
               return lineItem;
             };
-
 
             // Filter by Date / Type
             var date_filter = 'none';
@@ -251,78 +250,79 @@ Beardo.Twirl = function(resource) {
             }
 
             // Loop Through Items
-            _.each(lines, function(line, key) {
 
-              // FIXME: ADD MUCH BETTER CHECKING OF EMPTY LINES
-              if (line && line !== undefined) {
-
-                var parts = line.split(',');
-
-                // Filter Date & Trim
-                var check_date = Beardo.Date[date_filter](parts[0]);
-                var check_trim = Beardo.Trim(parts);
-
-                if (_.indexOf([check_date, check_trim], false) === -1) {
-
-                  var item_output = mapLineToSchema(line, resource.schema);
-
-                  increment_output(item_output);
-                }
+            csv.parse(data, function(err, data){
+              if (err){
+                console.log("Had a problem with the CSV File: ", err);
               }
-            });
+              _.each(data, function(line, index){
+                if (index !== 0){ // skip the first line
+                  var parts = line;
+                  // Filter Date & Trim
+                  var check_date = Beardo.Date[date_filter](parts[0]);
+                  var check_trim = Beardo.Trim(parts);
 
+                  if (_.indexOf([check_date, check_trim], false) === -1) {
+                    var item_output = mapLineToSchema(line, resource.schema);
 
-            // FIXME: OUTPUT STUFF (Refactor out)
-            console.log('-----------------------------------------------------------------------------');
-            console.log('Output Formats: ' + args.options.format);
-            console.log('-----------------------------------------------------------------------------');
-            console.log(outputs.cli);
-            console.log('-----------------------------------------------------------------------------');
-            console.log('Total hours worked: ' + outputs.totals.hours);
-            console.log('Total monies earned: $' + outputs.totals.money);
-
-            // Output HTML
-            if (_.indexOf(args.options.format, 'html') > -1) {
-
-
-              // Get HTML Template
-              var template_path = './templates/invoice.html';
-
-              // Open
-              fs.exists(template_path, function(exists) {
-              	if (exists) {
-
-              		console.log('Beardo loaded template');
-                  fs.stat(template_path, function(error, stats) {
-                    fs.open(template_path, "r", function(error, fd) {
-                      var buffer = new Buffer(stats.size);
-                      fs.read(fd, buffer, 0, buffer.length, null, function(error, bytesRead, buffer) {
-                        fs.close(fd);
-
-                        // Invoice Name
-                        var output_name = 'Beardo - ' + moment().format('D MMMM YYYY');
-                        if (args.options.output) {
-                          output_name = args.options.output;
-                        }
-
-                        var template_file = buffer.toString("utf8", 0, buffer.length);
-                        var template_html = _.template(template_file);
-                        var output_html   = template_html({
-                          generated_name: output_name,
-                          generated_date: moment().format('Do MMMM, YYYY'),
-                          hours_rows: outputs.html,
-                          hours_total: outputs.totals.hours,
-                          money_total: outputs.totals.money
-                        });
-
-                        var saveFile = new SaveFile(fs, 'output/' + output_name + '.html', output_html);
-
-                      });
-                    });
-                  });
+                    increment_output(item_output);
+                  }
                 }
               });
-            }
+
+              // FIXME: OUTPUT STUFF (Refactor out)
+              console.log('-----------------------------------------------------------------------------');
+              console.log('Output Formats: ' + args.options.format);
+              console.log('-----------------------------------------------------------------------------');
+              console.log(outputs.cli);
+              console.log('-----------------------------------------------------------------------------');
+              console.log('Total hours worked: ' + outputs.totals.hours);
+              console.log('Total monies earned: $' + outputs.totals.money);
+
+              // Output HTML
+              if (_.indexOf(args.options.format, 'html') > -1) {
+
+
+                // Get HTML Template
+                var template_path = './templates/invoice.html';
+
+                // Open
+                fs.exists(template_path, function(exists) {
+                  if (exists) {
+
+                    console.log('Beardo loaded template');
+                    fs.stat(template_path, function(error, stats) {
+                      fs.open(template_path, "r", function(error, fd) {
+                        var buffer = new Buffer(stats.size);
+                        fs.read(fd, buffer, 0, buffer.length, null, function(error, bytesRead, buffer) {
+                          fs.close(fd);
+
+                          // Invoice Name
+                          var output_name = 'Beardo - ' + moment().format('D MMMM YYYY');
+                          if (args.options.output) {
+                            output_name = args.options.output;
+                          }
+
+                          var template_file = buffer.toString("utf8", 0, buffer.length);
+                          var template_html = _.template(template_file);
+                          var output_html   = template_html({
+                            generated_name: output_name,
+                            generated_date: moment().format('Do MMMM, YYYY'),
+                            hours_rows: outputs.html,
+                            hours_total: outputs.totals.hours,
+                            money_total: outputs.totals.money
+                          });
+
+                          var saveFile = new SaveFile(fs, 'output/' + output_name + '.html', output_html);
+
+                        });
+                      });
+                    });
+                  }
+                });
+              }
+
+            });
           });
         });
       });
