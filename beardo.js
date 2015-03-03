@@ -15,7 +15,7 @@ argv.option({
   short: 'i',
   type: 'string',
   description: 'Defines schema file to open',
-  example: "'beardo.js --schema=value' or 'beardo.js -s data/hours.json"
+  example: "'beardo.js --input=value' or 'beardo.js -i data/hours.json"
 });
 
 argv.option({
