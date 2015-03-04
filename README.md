@@ -44,14 +44,23 @@ Flag | Short Flag | Behavior
 --date | -d | filters by date `'February, Feb, 01` allows case insensitive 
 --trim | -t | filters by an item like 'client' (currently hardcoded value)
 
+Run either of the follow two examples from terminal command line
+
 **Example (trim)**
 
-Run from CLI `node beardo.js --input data/clients.json --trim client-name`
+```
+node beardo.js --input data/clients.json --trim client-name
+```
+
+This command should have printed data to your command line that matches your trim parameter.
 
 **Example (output & date)**
 
-Run from CLI `node beardo.js -i data/clients.json -o Feb Invoice -t client-name --date Feb`
+```
+node beardo.js -i data/clients.json -o "Feb Invoice" -t client-name --date Feb
+```
 
+The above example should have outputted an HTML rendering of your the entries parsed from your data. The output will be located in `output/Feb Invoice.html`
 
 Tracker (adding entries)
 ---
