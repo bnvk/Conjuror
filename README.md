@@ -1,11 +1,11 @@
 ![The Magical Beardo](images/bearded-wizard.png)
 
 Beardo
-------
+---
 
 Beardo, the magical time tracking wizard who knows how you spend all your time and dons an epic beard. Kind of like Santa Claus, sans the whole naughty or nice bit.
 
-## Data
+## Data Format
 
 The data which Beardo consumes is simple CSV data that also implements [Data Protocols](http://dataprotocols.org) and was inspired by [this blog post](http://blog.okfn.org/2013/07/02/git-and-github-for-data/) from Rufus Pollock of [OKFN](http://okfn.org). Currently Beardo supports & makes bare minimum use of [JSON Table Schema](http://dataprotocols.org/json-table-schema/). 
 
@@ -26,8 +26,8 @@ date, time, description, client, location, rate
 2015-02-08, 2, updated commands & documentation, beardo, home, 0.00
 ```
 
-Currently, you need to need manually add items to the CSV, which is less than ideal, but an easy time tracker command is next on the agenda, we promise!
-
+You can manually add items to the CSV, or you can use the rough implemenation of the time tracker tool by running a separate script called 
+`track.js` read more about this below.
 
 ## Commands
 
@@ -52,6 +52,19 @@ Run from CLI `node beardo.js --input data/clients.json --trim client-name`
 
 Run from CLI `node beardo.js -i data/clients.json -o Feb Invoice -t client-name --date Feb`
 
+
+Tracker (adding entries)
+---
+
+There is currently a rough tracker tool that allows adding of entries via an interactive CLI. To this tool, type the following command:
+
+```
+node track.js -i path/to/your-file.csv
+```
+
+The track tool will then open that file and create suggestions that make it easier to add items that match that of previous entries. This feature is rough and has not been tested should be somewhat useful.
+
+*Tracker tool will eventually be merged into a unified CLI once [Issue #17](https://github.com/bnvk/Beardo/issues/17) is completed*
 
 ### Okay, What's With the Weird Name?
 
