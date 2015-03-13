@@ -128,7 +128,6 @@ Beardo.Date.none = function(parts) {
 
 Beardo.Trim = function(parts) {
   if (args.options.trim !== undefined) {
-
     var part = parts[3].trim();
 
     if (_.indexOf(args.options.trim, part) > -1) {
@@ -142,24 +141,24 @@ Beardo.Trim = function(parts) {
   }
 };
 
-Beardo.SummonUser = function(){
-  var user_schema_file = 'data/user.json';
+Beardo.summonUser = function(user_schema_file, callback){
   fs.exists(user_schema_file, function(exists) {
     if (exists) {
       var contents = fs.readFileSync(user_schema_file);
       var userSchema = JSON.parse(contents);
-      csv.parse(userSchema[0].resources.path, function(err, data) {
-        if (!err) {
 
+      csv.parse(userSchema[0].resources[0].path, function(err, data) {
+        if (!err) {
+          return callback(undefined);
         } else {
-          console.log('No user data found, continuing');
-          return false;
+          return callback(err)
         }
       });
     } else {
       console.log('No user data found, continuing');
-      return false;
+      return callback({'exists': exists})
     }
+
   });
 };
 
@@ -315,7 +314,7 @@ Beardo.Twirl = function(path, resource) {
               console.log('Total hours worked: ' + outputs.totals.hours);
               console.log('Total monies earned: $' + outputs.totals.money);
 
-              if (Beardo.SummonUser()){
+              if (Beardo.summonUser('data/user.json')){
 
               }
 
@@ -420,8 +419,6 @@ Beardo.Grow = function(schema_file) {
   });
 };
 
-
-
 // Start It Up
 if (args.options.input !== undefined) {
   Beardo.Grow(args.options.input);
@@ -429,3 +426,4 @@ if (args.options.input !== undefined) {
   console.log('404 No beard found \nAre you sure you specified an --input -i value');
 }
 
+module.exports = Beardo;
