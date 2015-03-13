@@ -8,7 +8,6 @@ var path    = require('path');
 var repl    = require('repl');
 var csv     = require('csv');
 
-
 // Args
 argv.option({
   name: 'input',
@@ -143,11 +142,131 @@ Beardo.Trim = function(parts) {
   }
 };
 
+Beardo.SummonUser = function(){
+  var user_schema_file = 'data/user.json';
+  fs.exists(user_schema_file, function(exists) {
+    if (exists) {
+      var contents = fs.readFileSync(user_schema_file);
+      var userSchema = JSON.parse(contents);
+      csv.parse(userSchema[0].resources.path, function(err, data) {
+        if (!err) {
+
+        } else {
+          console.log('No user data found, continuing');
+          return false;
+        }
+      });
+    } else {
+      console.log('No user data found, continuing');
+      return false;
+    }
+  });
+};
+
+Beardo.magickData = function(data, resource, outputs) {
+
+  // Filter by Date / Type
+  var date_filter = 'none';
+
+  if (args.options.date !== undefined) {
+
+    var is_date_full        = /[0-9]{4}-[0-9]{2}-[0-9]{2}/;
+    var is_date_year_month  = /[0-9]{4}-[0-9]{2}/;
+    var is_date_month_day   = /[0-9]{2}-[0-9]{2}/;
+    var is_date_year        = /[0-9]{4}/;
+
+    if (is_date_full.exec(args.options.date)) {
+      date_filter = 'full';
+    } else if (is_date_year_month.exec(args.options.date)) {
+      date_filter = 'year_month';
+    } else if (is_date_month_day.exec(args.options.date)) {
+      date_filter = 'month_day';
+    } else if (is_date_year.exec(args.options.date)) {
+      date_filter = 'year';
+    } else {
+      date_filter = 'month';
+    }
+
+    console.log('filter date by: ' + date_filter);
+  }
+
+  // Make Totals
+  var increment_output = function(item) {
+
+    outputs.totals.hours += item.time;
+    outputs.totals.money += (item.time * item.rate);
+
+    // CLI format
+    outputs.cli += item.date + ' ' + item.time + ' \t' + item.client + ' \t' + item.description + '\n';
+
+    // HTML format
+    if (_.indexOf(args.options.format, 'html') > -1) {
+      outputs.html += '<tr>\n';
+      outputs.html += '   <td>' + item.date + '</td>\n';
+      outputs.html += '   <td class="text-right">' + item.time + '</td>\n';
+      outputs.html += '   <td class="text-left"> hrs</td>\n';
+      outputs.html += '   <td>' + item.description + '</td>\n';
+      outputs.html += '</tr>\n';
+    }
+  };
+
+  _.each(data, function(line, index){
+    if (index !== 0){ // skip the first line
+      var parts = line;
+      // Filter Date & Trim
+      var check_date = Beardo.Date[date_filter](parts[0]);
+      var check_trim = Beardo.Trim(parts);
+
+      if (_.indexOf([check_date, check_trim], false) === -1) {
+        var item_output = Beardo.murmurLineToSchema(line, resource.schema);
+
+        increment_output(item_output);
+      }
+    }
+  });
+
+  return outputs;
+}
+
+Beardo.murmurLineToSchema = function(parts, schema, fields) {
+  // line is the line being processed,
+  // schema is the schema provided in the resource,
+  // fields is the fields required in the output, if blank it
+  // defaults to everything in the schema.
+  // var parts = line.split(',');
+  var lineItem = {};
+
+  _.each(schema.fields, function(field, index){
+    if (fields === undefined || fields.indexOf(field.name) !== -1){
+      var parsed;
+
+      if (field.type === 'date') {
+        parsed = moment(parts[index]).format('D MMM');
+      }
+      if (field.type === 'number'){
+        parsed = parseFloat(parts[index]);
+      }
+      if (field.type === 'string'){
+        parsed = parts[index].trim();
+      }
+      if (field.type === 'boolean'){
+        parsed = parts[index];
+        if (parsed === 'yes') parsed = true;
+        else if (parsed === 'no') parse = false;
+      }
+
+      // For Output
+      lineItem[field.name] = parsed;
+
+    }
+  });
+  return lineItem;
+};
+
 // Load Data & Parse
 Beardo.Twirl = function(path, resource) {
 
   var resource_file = path + '/' + resource.path;
-
   fs.exists(resource_file, function(exists) {
   	if (exists) {
 
@@ -165,7 +284,7 @@ Beardo.Twirl = function(path, resource) {
             // var lines = data.split("\n");
             // delete lines[0];
 
-            var hours = 0;
+            // var hours = 0;
 
             // Totals (for tallying)
             // console.log(resource.schema.fields);
@@ -178,107 +297,14 @@ Beardo.Twirl = function(path, resource) {
               html: ''
             };
 
-
-            // Make Totals
-            var increment_output = function(item) {
-
-              outputs.totals.hours += item.time;
-              outputs.totals.money += (item.time * item.rate);
-
-              // CLI format
-              outputs.cli += item.date + ' ' + item.time + ' \t' + item.client + ' \t' + item.description + '\n';
-
-              // HTML format
-              if (_.indexOf(args.options.format, 'html') > -1) {
-                outputs.html += '<tr>\n';
-                outputs.html += '   <td>' + item.date + '</td>\n';
-                outputs.html += '   <td class="text-right">' + item.time + '</td>\n';
-                outputs.html += '   <td class="text-left"> hrs</td>\n';
-                outputs.html += '   <td>' + item.description + '</td>\n';
-                outputs.html += '</tr>\n';
-              }
-            };
-
-            var mapLineToSchema = function(parts, schema, fields){
-              // line is the line being processed,
-              // schema is the schema provided in the resource,
-              // fields is the fields required in the output, if blank it
-              // defaults to everything in the schema.
-              // var parts = line.split(',');
-              var lineItem = {};
-
-              _.each(schema.fields, function(field, index){
-                if (fields === undefined || fields.indexOf(field.name) !== -1){
-                  var parsed;
-
-                  if (field.type === 'date') {
-                    parsed = moment(parts[index]).format('D MMM');
-                  }
-                  if (field.type === 'number'){
-                    parsed = parseFloat(parts[index]);
-                  }
-                  if (field.type === 'string'){
-                    parsed = parts[index].trim();
-                  }
-                  if (field.type === 'boolean'){
-                    parsed = parts[index];
-                    if (parsed === 'yes') parsed = true;
-                    else if (parsed === 'no') parse = false;
-                  }
-
-                  // For Output
-                  lineItem[field.name] = parsed;
-
-                }
-              });
-              return lineItem;
-            };
-
-            // Filter by Date / Type
-            var date_filter = 'none';
-
-            if (args.options.date !== undefined) {
-
-              var is_date_full        = /[0-9]{4}-[0-9]{2}-[0-9]{2}/;
-              var is_date_year_month  = /[0-9]{4}-[0-9]{2}/;
-              var is_date_month_day   = /[0-9]{2}-[0-9]{2}/;
-              var is_date_year        = /[0-9]{4}/;
-
-              if (is_date_full.exec(args.options.date)) {
-                date_filter = 'full';
-              } else if (is_date_year_month.exec(args.options.date)) {
-                date_filter = 'year_month';
-              } else if (is_date_month_day.exec(args.options.date)) {
-                date_filter = 'month_day';
-              } else if (is_date_year.exec(args.options.date)) {
-                date_filter = 'year';
-              } else {
-                date_filter = 'month';
-              }
-
-              console.log('filter date by: ' + date_filter);
-            }
-
             // Loop Through Items
 
             csv.parse(data, function(err, data){
               if (err){
                 console.log("Had a problem with the CSV File: ", err);
               }
-              _.each(data, function(line, index){
-                if (index !== 0){ // skip the first line
-                  var parts = line;
-                  // Filter Date & Trim
-                  var check_date = Beardo.Date[date_filter](parts[0]);
-                  var check_trim = Beardo.Trim(parts);
 
-                  if (_.indexOf([check_date, check_trim], false) === -1) {
-                    var item_output = mapLineToSchema(line, resource.schema);
-
-                    increment_output(item_output);
-                  }
-                }
-              });
+              outputs = Beardo.magickData(data, resource, outputs);
 
               // FIXME: OUTPUT STUFF (Refactor out)
               console.log('-----------------------------------------------------------------------------');
@@ -289,9 +315,12 @@ Beardo.Twirl = function(path, resource) {
               console.log('Total hours worked: ' + outputs.totals.hours);
               console.log('Total monies earned: $' + outputs.totals.money);
 
+              if (Beardo.SummonUser()){
+
+              }
+
               // Output HTML
               if (_.indexOf(args.options.format, 'html') > -1) {
-
 
                 // Get HTML Template
                 var template_path = './templates/invoice.html';
@@ -340,7 +369,6 @@ Beardo.Twirl = function(path, resource) {
   	else {
       console.log('awwww no data');
   	}
-
   });
 
 };
