@@ -149,7 +149,7 @@ Beardo.summonUser = function(user_schema_file, callback){
 
       csv.parse(userSchema[0].resources[0].path, function(err, data) {
         if (!err) {
-          return callback(undefined);
+          return callback(data);
         } else {
           return callback(err)
         }
@@ -314,8 +314,10 @@ Beardo.Twirl = function(path, resource) {
               console.log('Total hours worked: ' + outputs.totals.hours);
               console.log('Total monies earned: $' + outputs.totals.money);
 
-              if (Beardo.summonUser('data/user.json')){
-
+              // FIXME: This user data is not being used yet but will fix Issue #14 after some tiny work
+              if (Beardo.summonUser('data/user.json', function(user_data) {
+                  console.log(user_data);
+                })) {
               }
 
               // Output HTML
