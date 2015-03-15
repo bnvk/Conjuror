@@ -20,7 +20,8 @@
     "cheerio": "*",
     "fs": "*",
     "moment": "^2.9.0",
-    "underscore": "*"
+    "underscore": "*",
+    "inquirer": "0.8.0"
   },
   "engines": {
     "node": "*"
