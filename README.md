@@ -39,7 +39,7 @@ Flag | Short Flag | Behavior
 ------------ | ------------- | -------------
 --help | -h | shows list of commands
 --input | -i | selects `data.json` schema file to open up
---format | -f | allows you to choose different output formats (currently html, cli)
+--format | -f | allows you to choose different output formats (cli, html, pdf)
 --output | -o | specif `Name of File.html` being output
 --date | -d | filters by date `'February, Feb, 01` allows case insensitive 
 --trim | -t | filters by an item like 'client' (currently hardcoded value)
@@ -61,6 +61,11 @@ node beardo.js -i data/clients.json -o "Feb Invoice" -t client-name --date Feb
 ```
 
 The above example should have outputted an HTML rendering of your the entries parsed from your data. The output will be located in `output/Feb Invoice.html`
+
+**Note: regarding PDF export**
+
+To generate PDF outputs, you need to install [wkhtmltopdf](http://wkhtmltopdf.org/downloads.html) for your operating system,
+
 
 Tracker (adding entries)
 ---
