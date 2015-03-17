@@ -315,10 +315,15 @@ Beardo.Twirl = function(path, resource) {
               console.log('Total monies earned: $' + outputs.totals.money);
 
               // FIXME: This user data is not being used yet but will fix Issue #14 after some tiny work
-              if (Beardo.summonUser('data/user.json', function(user_data) {
-                  console.log(user_data);
-                })) {
-              }
+              Beardo.summonUser('data/user.json', function(user_data) {
+                if (user_data && user_data.error){
+
+                } else {
+
+                }
+                console.log(user_data);
+              })
+
 
               // Output HTML
               if (_.indexOf(args.options.format, 'html') > -1) {
