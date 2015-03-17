@@ -147,14 +147,25 @@ Beardo.summonUser = function(user_schema_file, callback){
     if (exists) {
       var contents = fs.readFileSync(user_schema_file);
       var userSchema = JSON.parse(contents);
+      var path = 'data/' + userSchema[0].resources[0].path;
+      var schema = userSchema[0].resources[0].schema;
+      var user = {};
+      var rowCount = 0;
 
-      csv.parse(userSchema[0].resources[0].path, function(err, data) {
-        if (!err) {
-          return callback(data);
-        } else {
-          return callback(err)
-        }
-      });
+      fs.createReadStream(path)
+        .pipe(csv.parse())
+        .pipe(csv.transform(function(row) {
+          // handle each row before the "end" or "error" stuff happens above
+          if (rowCount >= 1){
+            user = Beardo.murmurLineToSchema(row, schema);
+          }
+          rowCount++;
+        })).on('finish', function() {
+          return callback(user);
+        }).on('error', function(error) {
+          return callback(error);
+        });
+
     } else {
       console.log('No user data found, continuing');
       return callback({'exists': exists})
@@ -263,6 +274,73 @@ Beardo.murmurLineToSchema = function(parts, schema, fields) {
   return lineItem;
 };
 
+Beardo.castToHTML = function(outputs, user){
+  // Output HTML
+  console.log(args.options.format);
+  if (_.indexOf(args.options.format, 'html') > -1 || _.indexOf(args.options.format, 'pdf') > -1) {
+
+    // Get HTML Template
+    var template_path = './templates/invoice.html';
+
+    // Open
+    fs.exists(template_path, function(exists) {
+      if (exists) {
+
+        console.log('Beardo loaded template');
+        fs.stat(template_path, function(error, stats) {
+          fs.open(template_path, "r", function(error, fd) {
+            var buffer = new Buffer(stats.size);
+            fs.read(fd, buffer, 0, buffer.length, null, function(error, bytesRead, buffer) {
+              fs.close(fd);
+
+              // Invoice Name
+              var output_name = 'Beardo - ' + moment().format('D MMMM YYYY');
+              if (args.options.output) {
+                output_name = args.options.output;
+              }
+
+              var template_file = buffer.toString("utf8", 0, buffer.length);
+              var template_html = _.template(template_file);
+
+              var template_data = {
+                generated_name: output_name,
+                generated_date: moment().format('Do MMMM, YYYY'),
+                hours_rows: outputs.html,
+                hours_total: outputs.totals.hours,
+                money_total: outputs.totals.money
+              };
+
+              if (user !== undefined){
+                template_data.user = user;
+              }
+
+              var output_html = template_html(template_data);
+
+              // Save HTML file
+              if (_.indexOf(args.options.format, 'html') > -1) {
+                var saveFile = new SaveFile(fs, 'output/' + output_name + '.html', output_html);
+              }
+
+              // Save PDF file
+              Beardo.castHTMLToPDF(output_html, output_name);
+            });
+          });
+        });
+      }
+    });
+  }
+}
+
+Beardo.castHTMLToPDF = function(output_html, output_name){
+  if (_.indexOf(args.options.format, 'pdf') > -1) {
+    console.log('Saving as a PDF');
+    wkhtmltopdf(output_html, {
+      pageSize: 'letter',
+      output: 'output/' + output_name + '.pdf'
+    });
+  }
+}
+
 // Load Data & Parse
 Beardo.Twirl = function(path, resource) {
 
@@ -317,69 +395,14 @@ Beardo.Twirl = function(path, resource) {
 
               // FIXME: This user data is not being used yet but will fix Issue #14 after some tiny work
               Beardo.summonUser('data/user.json', function(user_data) {
-                if (user_data && user_data.error){
-
+                if (user_data && user_data.error === undefined){
+                  Beardo.castToHTML(outputs, user_data);
                 } else {
-
+                  Beardo.castToHTML(outputs, undefined);
                 }
-                console.log(user_data);
               })
 
-
-              // Output HTML
-              console.log(args.options.format);
-              if (_.indexOf(args.options.format, 'html') > -1 || _.indexOf(args.options.format, 'pdf') > -1) {
-
-                // Get HTML Template
-                var template_path = './templates/invoice.html';
-
-                // Open
-                fs.exists(template_path, function(exists) {
-                  if (exists) {
-
-                    console.log('Beardo loaded template');
-                    fs.stat(template_path, function(error, stats) {
-                      fs.open(template_path, "r", function(error, fd) {
-                        var buffer = new Buffer(stats.size);
-                        fs.read(fd, buffer, 0, buffer.length, null, function(error, bytesRead, buffer) {
-                          fs.close(fd);
-
-                          // Invoice Name
-                          var output_name = 'Beardo - ' + moment().format('D MMMM YYYY');
-                          if (args.options.output) {
-                            output_name = args.options.output;
-                          }
-
-                          var template_file = buffer.toString("utf8", 0, buffer.length);
-                          var template_html = _.template(template_file);
-                          var output_html   = template_html({
-                            generated_name: output_name,
-                            generated_date: moment().format('Do MMMM, YYYY'),
-                            hours_rows: outputs.html,
-                            hours_total: outputs.totals.hours,
-                            money_total: outputs.totals.money
-                          });
-
-                          // Save HTML file
-                          if (_.indexOf(args.options.format, 'html') > -1) {
-                            var saveFile = new SaveFile(fs, 'output/' + output_name + '.html', output_html);
-                          }
-
-                          // Save PDF file
-                          if (_.indexOf(args.options.format, 'pdf') > -1) {
-                            console.log('Saving as a PDF');
-                            wkhtmltopdf(output_html, { 
-                              pageSize: 'letter',
-                              output: 'output/' + output_name + '.pdf'
-                            });
-                          }
-
-                        });
-                      });
-                    });
-                  }
-                });
-              }
+              // Beardo.castToHTML(outputs);
 
             });
           });
