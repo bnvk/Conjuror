@@ -152,20 +152,26 @@ Beardo.summonUser = function(user_schema_file, callback){
       var user = {};
       var rowCount = 0;
 
-      fs.createReadStream(path)
-        .pipe(csv.parse())
-        .pipe(csv.transform(function(row) {
-          // handle each row before the "end" or "error" stuff happens above
-          if (rowCount >= 1){
-            user = Beardo.murmurLineToSchema(row, schema);
-          }
-          rowCount++;
-        })).on('finish', function() {
-          return callback(user);
-        }).on('error', function(error) {
-          return callback(error);
-        });
-
+      fs.exists(path, function(exists) {
+        if (exists) {
+          fs.createReadStream(path)
+            .pipe(csv.parse())
+            .pipe(csv.transform(function(row) {
+              // handle each row before the "end" or "error" stuff happens above
+              if (rowCount >= 1){
+                user = Beardo.murmurLineToSchema(row, schema);
+              }
+              rowCount++;
+            })).on('error', function(error) {
+              console.log('error', error);
+              return callback(error);
+            }).on('finish', function() {
+              return callback(user);
+            });
+        } else {
+          return callback({'exists': exists})
+        }
+      });
     } else {
       console.log('No user data found, continuing');
       return callback({'exists': exists})
