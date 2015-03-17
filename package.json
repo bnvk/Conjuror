@@ -19,9 +19,10 @@
     "bootstrap": "^3.3.2",
     "cheerio": "*",
     "fs": "*",
+    "inquirer": "0.8.0",
     "moment": "^2.9.0",
     "underscore": "*",
-    "inquirer": "0.8.0"
+    "wkhtmltopdf": "^0.1.5"
   },
   "engines": {
     "node": "*"

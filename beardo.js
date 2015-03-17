@@ -7,6 +7,7 @@ var net     = require('net');
 var path    = require('path');
 var repl    = require('repl');
 var csv     = require('csv');
+var wkhtmltopdf = require('wkhtmltopdf');
 
 // Args
 argv.option({
@@ -196,10 +197,10 @@ Beardo.magickData = function(data, resource, outputs) {
     outputs.totals.money += (item.time * item.rate);
 
     // CLI format
-    outputs.cli += item.date + ' ' + item.time + ' \t' + item.client + ' \t' + item.description + '\n';
+    outputs.cli += item.date + '\t ' + item.time + ' \t' + item.client + ' \t' + item.description + '\n';
 
     // HTML format
-    if (_.indexOf(args.options.format, 'html') > -1) {
+    if (_.indexOf(args.options.format, 'html') > -1 || _.indexOf(args.options.format, 'pdf') > -1) {
       outputs.html += '<tr>\n';
       outputs.html += '   <td>' + item.date + '</td>\n';
       outputs.html += '   <td class="text-right">' + item.time + '</td>\n';
@@ -326,7 +327,8 @@ Beardo.Twirl = function(path, resource) {
 
 
               // Output HTML
-              if (_.indexOf(args.options.format, 'html') > -1) {
+              console.log(args.options.format);
+              if (_.indexOf(args.options.format, 'html') > -1 || _.indexOf(args.options.format, 'pdf') > -1) {
 
                 // Get HTML Template
                 var template_path = './templates/invoice.html';
@@ -358,7 +360,19 @@ Beardo.Twirl = function(path, resource) {
                             money_total: outputs.totals.money
                           });
 
-                          var saveFile = new SaveFile(fs, 'output/' + output_name + '.html', output_html);
+                          // Save HTML file
+                          if (_.indexOf(args.options.format, 'html') > -1) {
+                            var saveFile = new SaveFile(fs, 'output/' + output_name + '.html', output_html);
+                          }
+
+                          // Save PDF file
+                          if (_.indexOf(args.options.format, 'pdf') > -1) {
+                            console.log('Saving as a PDF');
+                            wkhtmltopdf(output_html, { 
+                              pageSize: 'letter',
+                              output: 'output/' + output_name + '.pdf'
+                            });
+                          }
 
                         });
                       });
