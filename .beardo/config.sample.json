@@ -1,0 +1,9 @@
+{
+  "invoice_template": "wizard",
+  "user": {
+    "display_name": "Jane Doe",
+    "address": "The Woods",
+    "email": "jane@doe.com",
+    "website": "jane.doe.net"
+  }
+}

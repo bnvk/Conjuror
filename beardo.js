@@ -128,6 +128,7 @@ Beardo.Date.none = function(parts) {
 
 
 Beardo.Trim = function(parts) {
+  console.log(parts);
   if (args.options.trim !== undefined) {
     var part = parts[3].trim();
 
@@ -142,41 +143,15 @@ Beardo.Trim = function(parts) {
   }
 };
 
-Beardo.summonUser = function(user_schema_file, callback){
-  fs.exists(user_schema_file, function(exists) {
+Beardo.summonUser = function(config_file, callback){
+  fs.exists(config_file, function(exists) {
     if (exists) {
-      var contents = fs.readFileSync(user_schema_file);
-      var userSchema = JSON.parse(contents);
-      var path = 'data/' + userSchema[0].resources[0].path;
-      var schema = userSchema[0].resources[0].schema;
-      var user = {};
-      var rowCount = 0;
-
-      fs.exists(path, function(exists) {
-        if (exists) {
-          fs.createReadStream(path)
-            .pipe(csv.parse())
-            .pipe(csv.transform(function(row) {
-              // handle each row before the "end" or "error" stuff happens above
-              if (rowCount >= 1){
-                user = Beardo.murmurLineToSchema(row, schema);
-              }
-              rowCount++;
-            })).on('error', function(error) {
-              console.log('error', error);
-              return callback(error);
-            }).on('finish', function() {
-              return callback(user);
-            });
-        } else {
-          return callback({'exists': exists})
-        }
-      });
+      var contents = fs.readFileSync(config_file);
+      var config = JSON.parse(contents);
+      return callback(config.user);
     } else {
-      console.log('No user data found, continuing');
       return callback({'exists': exists})
     }
-
   });
 };
 
@@ -399,17 +374,13 @@ Beardo.Twirl = function(path, resource) {
               console.log('Total hours worked: ' + outputs.totals.hours);
               console.log('Total monies earned: $' + outputs.totals.money);
 
-              // FIXME: This user data is not being used yet but will fix Issue #14 after some tiny work
-              Beardo.summonUser('data/user.json', function(user_data) {
+              Beardo.summonUser('.beardo/config.json', function(user_data) {
                 if (user_data && user_data.error === undefined){
                   Beardo.castToHTML(outputs, user_data);
                 } else {
                   Beardo.castToHTML(outputs, undefined);
                 }
               })
-
-              // Beardo.castToHTML(outputs);
-
             });
           });
         });

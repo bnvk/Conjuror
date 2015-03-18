@@ -1,5 +1,6 @@
 bower_components/
 node_modules/
 data/
+.beardo/
 output/
 .DS_Store
