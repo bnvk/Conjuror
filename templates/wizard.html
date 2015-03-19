@@ -38,16 +38,16 @@ em { font-style:italic; }
 */
 * { margin: 0; }
 body    { height: 100%; margin: 0; font-family: 'Charter', Georgia, serif; font-size: 14px; line-height: 21px; }
-h1      { font-size: 36px; line-height: 36px; margin: 0 0 10px 0; padding: 0px; font-weight: bold; }
-h2      { font-size: 30px; line-height: 30px; margin: 0 0 10px 0; padding: 0px; font-weight: bold; }
-h3      { font-size: 24px; line-height: 24px; margin: 0 0 10px 0; padding: 0px; font-weight: bold; }
-h4      { font-size: 21px; margin: 0 0 10px 0; font-weight: bold; }
+h1      { font-size: 28px; line-height: 1.6; margin: 0 0 10px 0; padding: 0px; font-weight: bold; }
+h2      { font-size: 26px; line-height: 1.6; margin: 0 0 10px 0; padding: 0px; font-weight: bold; }
+h3      { font-size: 20px; line-height: 1.6; margin: 0 0 10px 0; padding: 0px; font-weight: bold; }
+h4      { font-size: 16px; line-height: 1.6; margin: 0 0 10px 0; font-weight: bold; }
 a:link      { color: #bd0707; text-decoration: none; line-height: 21px; font-weight: bold; }
 a:visited   { color: #bd0707; text-decoration: none; }
 a:hover     { color:#960f0f; text-decoration: underline; }
 a:active    { text-decoration: none; }
-p       { margin: 15px 0; }
-hr      { margin: 25px 0; }
+p       { margin: 12px 0; }
+hr      { margin: 18px 0; }
 ul      { margin: 0px; padding: 0px 0px 0px 20px; list-style-type: square; }
 ul li   { margin: 0px; padding: 0px; }
 blockquote  { width: 75%; font-size: 30px; line-height: 36px; color: #999999; border-left: 8px solid #D9D9D9; padding: 5px 0 5px 25px; margin: 25px 0; font-style: italic; }
@@ -103,7 +103,7 @@ dd { margin-left: 1em; font-style: italic; }
     </div>
 
     <div class="right text-right">
-      <h1><%= user.display_name || 'Brennan Novak' %></h1>
+      <h1><%= user.display_name %></h1>
 
       <a href="<%= user.website %>"><%= user.website %></a><br>
     </div>
@@ -125,6 +125,7 @@ dd { margin-left: 1em; font-style: italic; }
     <div class="right text-right">
       <em>Design. Code. Freedom.</em><br>
       <em>Made with <a href="https://github.com/bnvk/Beardo" target="_blank">Beardo</a></em>
+      <%= user.extra %>
     </div>
 
     <div class="clear"></div>
