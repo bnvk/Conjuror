@@ -127,7 +127,6 @@ Beardo.Date.none = function(parts) {
 
 
 Beardo.Trim = function(parts) {
-  console.log(parts);
   if (args.options.trim !== undefined) {
     var part = parts[3].trim();
 
@@ -289,7 +288,7 @@ Beardo.castToHTML = function(outputs, user){
               fs.close(fd);
 
               // Invoice Name
-              var output_name = 'Beardo - ' + moment().format('D MMMM YYYY');
+              var output_name = 'Invoice - ' + moment().format('D MMMM YYYY');
               if (args.options.output) {
                 output_name = args.options.output;
               }
