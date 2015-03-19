@@ -204,7 +204,7 @@ Beardo.magickData = function(data, resource, outputs) {
       date_filter = 'month';
     }
 
-    console.log('filter date by: ' + date_filter);
+    console.log('Filter by ' + date_filter + ': ' + args.options.date);
   }
 
   // Make Totals
@@ -354,8 +354,6 @@ Beardo.Twirl = function(path, resource) {
   fs.exists(resource_file, function(exists) {
   	if (exists) {
 
-  		console.log('Beardo is twirling some data');
-
       fs.stat(resource_file, function(error, stats) {
         fs.open(resource_file, "r", function(error, fd) {
 
@@ -365,13 +363,8 @@ Beardo.Twirl = function(path, resource) {
             fs.close(fd);
 
             var data = buffer.toString("utf8", 0, buffer.length);
-            // var lines = data.split("\n");
-            // delete lines[0];
-
-            // var hours = 0;
 
             // Totals (for tallying)
-            // console.log(resource.schema.fields);
             var outputs = {
               totals: {
                 hours: 0,
@@ -382,7 +375,6 @@ Beardo.Twirl = function(path, resource) {
             };
 
             // Loop Through Items
-
             csv.parse(data, function(err, data){
               if (err){
                 console.log("Had a problem with the CSV File: ", err);
@@ -391,8 +383,11 @@ Beardo.Twirl = function(path, resource) {
               outputs = Beardo.magickData(data, resource, outputs);
 
               // FIXME: OUTPUT STUFF (Refactor out)
-              console.log('-----------------------------------------------------------------------------');
-              console.log('Output Formats: ' + args.options.format);
+              if (args.options.format) {
+                console.log('-----------------------------------------------------------------------------');
+                console.log('Output Formats: ' + args.options.format.join(','));
+              }
+
               console.log('-----------------------------------------------------------------------------');
               console.log(outputs.cli);
               console.log('-----------------------------------------------------------------------------');
