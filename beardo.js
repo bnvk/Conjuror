@@ -57,7 +57,6 @@ var args = argv.run();
 // File Manipulation
 var SaveFile = require('./lib/save_file');
 
-
 // Beardo
 var Beardo = {};
 
@@ -143,16 +142,29 @@ Beardo.Trim = function(parts) {
   }
 };
 
-Beardo.summonUser = function(config_file, callback){
+
+Beardo.getIngredients = function(config_file, callback){
+  // Finds the config file if it exists.
   fs.exists(config_file, function(exists) {
     if (exists) {
+      console.log("Found a config file");
       var contents = fs.readFileSync(config_file);
       var config = JSON.parse(contents);
-      return callback(config.user);
+      return callback(config);
     } else {
       return callback({'exists': exists})
     }
   });
+}
+
+Beardo.summonUser = function(callback){
+  // TODO: We should probably remove the depency on args here, and pass it in
+  // as a variable.
+  if (args.config !== undefined && args.config.user !== undefined){
+    return callback(args.config.user);
+  } else {
+    return callback({'exists': false});
+  }
 };
 
 Beardo.magickData = function(data, resource, outputs) {
@@ -257,11 +269,13 @@ Beardo.murmurLineToSchema = function(parts, schema, fields) {
 
 Beardo.castToHTML = function(outputs, user){
   // Output HTML
-  console.log(args.options.format);
+
   if (_.indexOf(args.options.format, 'html') > -1 || _.indexOf(args.options.format, 'pdf') > -1) {
 
     // Get HTML Template
-    var template_path = './templates/invoice.html';
+    var template = args.config.invoice_template || 'invoice';
+    console.log("Using template:", template);
+    var template_path = './templates/' + template + '.html';
 
     // Open
     fs.exists(template_path, function(exists) {
@@ -374,7 +388,7 @@ Beardo.Twirl = function(path, resource) {
               console.log('Total hours worked: ' + outputs.totals.hours);
               console.log('Total monies earned: $' + outputs.totals.money);
 
-              Beardo.summonUser('.beardo/config.json', function(user_data) {
+              Beardo.summonUser(function(user_data) {
                 if (user_data && user_data.error === undefined){
                   Beardo.castToHTML(outputs, user_data);
                 } else {
@@ -442,7 +456,12 @@ Beardo.Grow = function(schema_file) {
 
 // Start It Up
 if (args.options.input !== undefined) {
-  Beardo.Grow(args.options.input);
+  Beardo.getIngredients('.beardo/config.json', function(config){
+    // don't really care of the status of config for the moment.
+    // let's just supply sensible defaults.
+    args.config = config;
+    Beardo.Grow(args.options.input);
+  });
 } else {
   console.log('404 No beard found \nAre you sure you specified an --input -i value');
 }
