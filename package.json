@@ -1,5 +1,4 @@
 {
-  "author": "Brennan Novak",
   "name": "beardo",
   "description": "A magical CSV data parsing and outputing wizard",
   "version": "0.1.1",
@@ -16,6 +15,16 @@
   "bin": {
     "beardo": "./bin/uppercaseme"
   },
+  "author": {
+    "name": "Brennan Novak",
+    "email": "hi@bnvk.me"
+  },
+  "contributors": [
+    {
+      "name": "Simon Vansintjan",
+      "email": "svansintjan@gmail.com"
+    }
+  ],
   "dependencies": {
     "argv": "0.0.2",
     "bootstrap": "^3.3.2",
