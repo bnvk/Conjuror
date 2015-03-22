@@ -135,6 +135,9 @@ function runApp() {
   inquirer.prompt(questions, function(answers) {
 
     // Convert to CSV
+    // Add quotes so that the string escapes commas.
+    // TODO: probably escape other characters as well.
+    answers.description = '"' + answers.description + '"'
     var entryData = '\n' + _.values(answers).join(',');
 
     // Save entry
