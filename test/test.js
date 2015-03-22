@@ -2,6 +2,24 @@ var assert = require("assert");
 var Beardo = require("../Beardo");
 
 describe('Beardo', function(){
+
+  describe('twirl', function(){
+    it('should twirl a resource', function(done){
+      Beardo.Twirl('test', 'test_twirl.csv', function(err){
+        assert.equal(err, undefined);
+        done();
+      });
+    });
+
+    it('should return an error if there is no CSV data', function(done){
+      Beardo.Twirl('blah', 'blah', function(err){
+        assert.notEqual(err, undefined);
+        done();
+      });
+    });
+
+  });
+
   describe('summonUser', function(){
 
     // These tests are pending, cause I have no idea how to access or set
