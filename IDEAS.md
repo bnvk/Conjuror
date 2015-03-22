@@ -60,3 +60,10 @@ beardo> --trim client:Mailpile --date 2015-02
 ```
 
 Any major blindspots I'm missing?
+
+
+## GUI
+
+At some point adding a nice simple GUI to Beardo will be desired... I have some ideas how to do this that seem fun and novel... e.g. not just another boring time tracking app. 
+
+- [Nifty progress bar](http://kimmobrunfeldt.github.io/progressbar.js)
