@@ -86,3 +86,4 @@ Did you know beards could tell time? No truly, Beards are a magical wonder of na
 
 Since I am one of those of those rare individuals who suffer from Beard envy, in that I cannot really grow a proper beard, I decided to make a prosthetic beard- or rather an experiment in open data and time tracking / invoicing software that keeps record of my work and activities.
 
+![Made in Berlin](images/Made-in-Berlin.png)
