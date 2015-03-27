@@ -8,6 +8,7 @@ var path    = require('path');
 var repl    = require('repl');
 var csv     = require('csv');
 var wkhtmltopdf = require('wkhtmltopdf');
+var beardoDate  = require('./lib/beard_date.js');
 
 // Args
 argv.option({
@@ -42,13 +43,20 @@ argv.option({
   example: "'beardo.js --date=value' or 'beardo.js -d January or Jan or 01'"
 });
 
-
 argv.option({
   name: 'trim',
   short: 't',
   type: 'list,string',
   description: 'Trims output by a given string value declared in schema',
   example: "'beardo.js --trim=value' or 'beardo.js -t Client'"
+});
+
+argv.option({
+  name: 'fixedprice',
+  short: 'p',
+  type: 'float',
+  description: 'Builds the invoice to a fixed price',
+  example: "'beardo.js --fixedprice=1000' or 'beardo.js -p 1000'"
 });
 
 var args = argv.run();
@@ -60,71 +68,8 @@ var SaveFile = require('./lib/save_file');
 // Beardo
 var Beardo = {};
 
-Beardo.Date = {};
-
-Beardo.Date.full = function(date) {
-
-  var this_date = date.replace(/-/g,'');
-  var filter_date = args.options.date.replace(/-/g, '');
-
-  if (this_date >= filter_date) {
-    //console.log('this date: 'this_date + ' is greater than filter date: ' + filter_date);
-    return true;
-  } else {
-    return false;
-  }
-};
-
-Beardo.Date.year_month = function(date) {
-
-  if (date.indexOf(args.options.date) > -1) {
-    //console.log('date filter by year_month ' + date);
-    return true;
-  } else {
-    return false;
-  }
-};
-
-Beardo.Date.month_day = function(date) {
-
-  if (date.indexOf(args.options.date) > -1) {
-    //console.log('date filter by month_day ' + date);
-    return true;
-  } else {
-    return false;
-  }
-};
-
-Beardo.Date.year = function(date) {
-
-  if (date.indexOf(args.options.date) > -1) {
-    //console.log('date filter by year ' + date);
-    return true;
-  } else {
-    return false;
-  }
-};
-
-Beardo.Date.month = function(date) {
-
-  var date_trim = args.options.date.toLowerCase();
-  var date_full = moment(date).format('MMMM').toLowerCase();
-  var date_abbr = moment(date).format('MMM').toLowerCase();
-  var date_numb = moment(date).format('MM').toLowerCase();
-
-  if (_.indexOf([date_full, date_abbr, date_numb], date_trim) > -1) {
-    //console.log('date matches filter: ' + date_trim)
-    return true;
-  } else {
-    return false;
-  }
-};
-
-
-Beardo.Date.none = function(parts) {
-  console.log('no date filtering performed');
-};
-
+// Load Beardo.Date
+Beardo.Date = beardoDate;
 
 Beardo.Trim = function(parts) {
   if (args.options.trim !== undefined) {
@@ -369,6 +314,9 @@ Beardo.Twirl = function(path, resource) {
               }
 
               outputs = Beardo.magickData(data, resource, outputs);
+
+              // Overwrite outputs.money when we have a fixed price.
+              outputs.totals.money = +args.options.fixedprice
 
               // FIXME: OUTPUT STUFF (Refactor out)
               if (args.options.format) {
