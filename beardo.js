@@ -118,6 +118,7 @@ Beardo.magickData = function(data, resource, outputs) {
 
   if (args.options.date !== undefined) {
 
+    // TODO: would it be easier to just use moment.js for this?
     var is_date_full        = /[0-9]{4}-[0-9]{2}-[0-9]{2}/;
     var is_date_year_month  = /[0-9]{4}-[0-9]{2}/;
     var is_date_month_day   = /[0-9]{2}-[0-9]{2}/;
@@ -162,7 +163,7 @@ Beardo.magickData = function(data, resource, outputs) {
     if (index !== 0){ // skip the first line
       var parts = line;
       // Filter Date & Trim
-      var check_date = Beardo.Date[date_filter](parts[0]);
+      var check_date = Beardo.Date[date_filter](parts[0], args.options.date);
       var check_trim = Beardo.Trim(parts);
 
       if (_.indexOf([check_date, check_trim], false) === -1) {

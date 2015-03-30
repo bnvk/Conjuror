@@ -20,6 +20,24 @@ describe('Beardo', function(){
 
   });
 
+  describe('date', function(){
+    it('should ignore March dates when looking for "Feb"', function() {
+      assert.equal(false, Beardo.Date.month('2015-03-05', 'Feb'));
+    });
+    it('should accept Feb dates when looking for "Feb"', function() {
+      assert.equal(true, Beardo.Date.month('2015-02-05', 'Feb'));
+    });
+    it('should accept Feb dates when looking for "02"', function() {
+      assert.equal(true, Beardo.Date.month('2015-02-05', '02'));
+    });
+    it('should accept full dates ', function() {
+      assert.equal(true, Beardo.Date.full('2015-02-05', '2015-02-05'));
+    });
+    it('should reject full dates ', function() {
+      assert.equal(false, Beardo.Date.full('2015-02-05', '2015-02-06'));
+    });
+  });
+
   describe('summonUser', function(){
 
     // These tests are pending, cause I have no idea how to access or set
