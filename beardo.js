@@ -338,7 +338,7 @@ Beardo.Twirl = function(path, resource, callback) {
                   Beardo.castToHTML(outputs, undefined);
                 }
                 // return callback for test purposes, and for future func?
-                return callback();
+                if (callback) return callback();
               })
             });
           });
@@ -348,7 +348,7 @@ Beardo.Twirl = function(path, resource, callback) {
   	else {
       console.log('awwww no data');
       // return callback for test purposes, and for future func?
-      return callback({'error': '404'});
+      if (callback) return callback({'error': '404'});
   	}
   });
 
