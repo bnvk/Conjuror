@@ -8,6 +8,7 @@ var path    = require('path');
 var repl    = require('repl');
 var csv     = require('csv');
 var wkhtmltopdf = require('wkhtmltopdf');
+var beardoDate  = require('./lib/beard_date.js');
 
 // Args
 argv.option({
@@ -42,13 +43,20 @@ argv.option({
   example: "'beardo.js --date=value' or 'beardo.js -d January or Jan or 01'"
 });
 
-
 argv.option({
   name: 'trim',
   short: 't',
   type: 'list,string',
   description: 'Trims output by a given string value declared in schema',
   example: "'beardo.js --trim=value' or 'beardo.js -t Client'"
+});
+
+argv.option({
+  name: 'fixedprice',
+  short: 'p',
+  type: 'float',
+  description: 'Builds the invoice to a fixed price',
+  example: "'beardo.js --fixedprice=1000' or 'beardo.js -p 1000'"
 });
 
 var args = argv.run();
@@ -60,71 +68,8 @@ var SaveFile = require('./lib/save_file');
 // Beardo
 var Beardo = {};
 
-Beardo.Date = {};
-
-Beardo.Date.full = function(date) {
-
-  var this_date = date.replace(/-/g,'');
-  var filter_date = args.options.date.replace(/-/g, '');
-
-  if (this_date >= filter_date) {
-    //console.log('this date: 'this_date + ' is greater than filter date: ' + filter_date);
-    return true;
-  } else {
-    return false;
-  }
-};
-
-Beardo.Date.year_month = function(date) {
-
-  if (date.indexOf(args.options.date) > -1) {
-    //console.log('date filter by year_month ' + date);
-    return true;
-  } else {
-    return false;
-  }
-};
-
-Beardo.Date.month_day = function(date) {
-
-  if (date.indexOf(args.options.date) > -1) {
-    //console.log('date filter by month_day ' + date);
-    return true;
-  } else {
-    return false;
-  }
-};
-
-Beardo.Date.year = function(date) {
-
-  if (date.indexOf(args.options.date) > -1) {
-    //console.log('date filter by year ' + date);
-    return true;
-  } else {
-    return false;
-  }
-};
-
-Beardo.Date.month = function(date) {
-
-  var date_trim = args.options.date.toLowerCase();
-  var date_full = moment(date).format('MMMM').toLowerCase();
-  var date_abbr = moment(date).format('MMM').toLowerCase();
-  var date_numb = moment(date).format('MM').toLowerCase();
-
-  if (_.indexOf([date_full, date_abbr, date_numb], date_trim) > -1) {
-    //console.log('date matches filter: ' + date_trim)
-    return true;
-  } else {
-    return false;
-  }
-};
-
-
-Beardo.Date.none = function(parts) {
-  console.log('no date filtering performed');
-};
-
+// Load Beardo.Date
+Beardo.Date = beardoDate;
 
 Beardo.Trim = function(parts) {
   if (args.options.trim !== undefined) {
@@ -173,6 +118,7 @@ Beardo.magickData = function(data, resource, outputs) {
 
   if (args.options.date !== undefined) {
 
+    // TODO: would it be easier to just use moment.js for this?
     var is_date_full        = /[0-9]{4}-[0-9]{2}-[0-9]{2}/;
     var is_date_year_month  = /[0-9]{4}-[0-9]{2}/;
     var is_date_month_day   = /[0-9]{2}-[0-9]{2}/;
@@ -217,7 +163,7 @@ Beardo.magickData = function(data, resource, outputs) {
     if (index !== 0){ // skip the first line
       var parts = line;
       // Filter Date & Trim
-      var check_date = Beardo.Date[date_filter](parts[0]);
+      var check_date = Beardo.Date[date_filter](parts[0], args.options.date);
       var check_trim = Beardo.Trim(parts);
 
       if (_.indexOf([check_date, check_trim], false) === -1) {
@@ -336,9 +282,9 @@ Beardo.castHTMLToPDF = function(output_html, output_name){
 }
 
 // Load Data & Parse
-Beardo.Twirl = function(path, resource) {
-
+Beardo.Twirl = function(path, resource, callback) {
   var resource_file = path + '/' + resource.path;
+  console.log(resource_file);
   fs.exists(resource_file, function(exists) {
   	if (exists) {
 
@@ -370,6 +316,11 @@ Beardo.Twirl = function(path, resource) {
 
               outputs = Beardo.magickData(data, resource, outputs);
 
+              // Overwrite outputs.money when we have a fixed price.
+              if (args.options.fixedprice) {
+                outputs.totals.money = +args.options.fixedprice
+              }
+
               // FIXME: OUTPUT STUFF (Refactor out)
               if (args.options.format) {
                 console.log('-----------------------------------------------------------------------------');
@@ -388,6 +339,8 @@ Beardo.Twirl = function(path, resource) {
                 } else {
                   Beardo.castToHTML(outputs, undefined);
                 }
+                // return callback for test purposes, and for future func?
+                if (callback) return callback();
               })
             });
           });
@@ -396,6 +349,8 @@ Beardo.Twirl = function(path, resource) {
   	}
   	else {
       console.log('awwww no data');
+      // return callback for test purposes, and for future func?
+      if (callback) return callback({'error': '404'});
   	}
   });
 
