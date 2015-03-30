@@ -317,7 +317,9 @@ Beardo.Twirl = function(path, resource, callback) {
               outputs = Beardo.magickData(data, resource, outputs);
 
               // Overwrite outputs.money when we have a fixed price.
-              outputs.totals.money = +args.options.fixedprice
+              if (args.options.fixedprice) {
+                outputs.totals.money = +args.options.fixedprice
+              }
 
               // FIXME: OUTPUT STUFF (Refactor out)
               if (args.options.format) {
