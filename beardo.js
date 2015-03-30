@@ -282,9 +282,9 @@ Beardo.castHTMLToPDF = function(output_html, output_name){
 }
 
 // Load Data & Parse
-Beardo.Twirl = function(path, resource) {
-
+Beardo.Twirl = function(path, resource, callback) {
   var resource_file = path + '/' + resource.path;
+  console.log(resource_file);
   fs.exists(resource_file, function(exists) {
   	if (exists) {
 
@@ -337,6 +337,8 @@ Beardo.Twirl = function(path, resource) {
                 } else {
                   Beardo.castToHTML(outputs, undefined);
                 }
+                // return callback for test purposes, and for future func?
+                return callback();
               })
             });
           });
@@ -345,6 +347,8 @@ Beardo.Twirl = function(path, resource) {
   	}
   	else {
       console.log('awwww no data');
+      // return callback for test purposes, and for future func?
+      return callback({'error': '404'});
   	}
   });
 
