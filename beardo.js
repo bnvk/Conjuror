@@ -59,6 +59,22 @@ argv.option({
   example: "'beardo.js --fixedprice=1000' or 'beardo.js -p 1000'"
 });
 
+argv.option({
+  name: 'currency',
+  short: 'c',
+  type: 'string',
+  description: 'Sets the output price for the currency',
+  example: "'beardo.js --currency=$' or 'beardo.js -c '$''"
+});
+
+argv.option({
+  name: 'extra',
+  short: 'e',
+  type: 'string',
+  description: 'If your template has an extra information page, add it this way',
+  example: "'beardo.js --extra=\"some extra information\"' or 'beardo.js -e 'Some Extra Information''"
+});
+
 var args = argv.run();
 
 
@@ -247,12 +263,16 @@ Beardo.castToHTML = function(outputs, user){
                 generated_date: moment().format('Do MMMM, YYYY'),
                 hours_rows: outputs.html,
                 hours_total: outputs.totals.hours,
-                money_total: outputs.totals.money
+                money_total: outputs.totals.money,
               };
 
               if (user !== undefined){
                 template_data.user = user;
+                template_data.currency = user.currency;
               }
+
+              template_data.currency = args.options.currency || '$';
+              template_data.extra = args.options.extra || '';
 
               var output_html = template_html(template_data);
 
@@ -331,7 +351,7 @@ Beardo.Twirl = function(path, resource, callback) {
               console.log(outputs.cli);
               console.log('-----------------------------------------------------------------------------');
               console.log('Total hours worked: ' + outputs.totals.hours);
-              console.log('Total monies earned: $' + outputs.totals.money);
+              console.log('Total monies earned: ' + (args.options.currency || '$') + outputs.totals.money);
 
               Beardo.summonUser(function(user_data) {
                 if (user_data && user_data.error === undefined){
