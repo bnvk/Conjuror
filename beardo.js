@@ -139,8 +139,14 @@ Beardo.magickData = function(data, resource, outputs) {
     var is_date_year_month  = /[0-9]{4}-[0-9]{2}/;
     var is_date_month_day   = /[0-9]{2}-[0-9]{2}/;
     var is_date_year        = /[0-9]{4}/;
+    var is_week             = /week/;
+    var is_month            = /month/;
 
-    if (is_date_full.exec(args.options.date)) {
+    if (is_week) {
+      date_filter = 'this_week';
+    } else if (is_month) {
+      date_filter = 'this_month';
+    } else if (is_date_full.exec(args.options.date)) {
       date_filter = 'full';
     } else if (is_date_year_month.exec(args.options.date)) {
       date_filter = 'year_month';
