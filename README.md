@@ -40,9 +40,12 @@ Flag | Short Flag | Behavior
 --help | -h | shows list of commands
 --input | -i | selects `data.json` schema file to open up
 --format | -f | allows you to choose different output formats (cli, html, pdf)
---output | -o | specif `Name of File.html` being output
---date | -d | filters by date `'February, Feb, 01` allows case insensitive
+--output | -o | specify `Name of File.html` being output
+--date | -d | filters by date `'February, Feb, 01` allows case insensitive. Also allows filtering by `week` and `month` which filters by the current week and current month respectively.
 --trim | -t | filters by an item like 'client' (currently hardcoded value)
+--fixedprice | -p | Override the calculated price with a fixed price
+--currency | -c | what currency the thing is in
+--extra | -e | Text to appear in the `extra` field in the template. Overrides the extra field in config.
 
 Run either of the follow two examples from terminal command line
 
