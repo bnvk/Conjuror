@@ -142,9 +142,9 @@ Beardo.magickData = function(data, resource, outputs) {
     var is_week             = /week/;
     var is_month            = /month/;
 
-    if (is_week) {
+    if (is_week.exec(args.options.date)) {
       date_filter = 'this_week';
-    } else if (is_month) {
+    } else if (is_month.exec(args.options.date)) {
       date_filter = 'this_month';
     } else if (is_date_full.exec(args.options.date)) {
       date_filter = 'full';
