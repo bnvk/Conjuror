@@ -1,5 +1,6 @@
 var assert = require("assert");
 var Beardo = require("../Beardo");
+var moment = require('moment');
 
 describe('Beardo', function(){
 
@@ -64,6 +65,70 @@ describe('Beardo', function(){
     });
     it('should reject full dates ', function() {
       assert.equal(false, Beardo.Date.full('2015-02-05', '2015-02-06'));
+    });
+  });
+
+  describe('magickData', function() {
+
+    // populate some data for this month
+    var data_month = [
+      [ 'date','time','description','client','location','rate','payment_rate' ],
+      [ moment().format('YYYY-MM-DD'),
+        '3', 'started tinkering', 'beardo', 'home', '0.00'],
+      [ moment().subtract(2, 'months').format('YYYY-MM-DD'),
+        '3', 'started tinkering', 'beardo', 'home', '0.00'],
+      [ moment().add(8, 'days').format('YYYY-MM-DD'),
+        '3', 'started tinkering', 'beardo', 'home', '0.00'],
+      [ moment().subtract(2, 'years').format('YYYY-MM-DD'),
+        '3', 'started tinkering', 'beardo', 'home', '0.00']
+      ];
+
+    var schema = {
+        "fields": [{
+            "name": "date",
+            "title": "date when work was performed",
+            "type": "date"
+          },{
+            "name": "time",
+            "title": "the amount of time worked. Represent in hours as floating point '8' or '0.5' value",
+            "type": "number"
+          },{
+            "name": "description",
+            "title": "description of work performed",
+            "type": "string"
+          },{
+            "name": "client",
+            "title": "name of client worked for",
+            "type": "string"
+          },{
+            "name": "location",
+            "title": "place where work was performed",
+            "type": "string"
+          },{
+            "name": "rate",
+            "title": "the rate to invoice at",
+            "type": "number"
+          }]
+    }
+
+    it('should filter by month', function() {
+      var outputs = Beardo.magickData(data_month, schema, 'month');
+      assert.equal(6, outputs.totals.hours);
+    });
+
+    it('should filter by week', function() {
+      var outputs = Beardo.magickData(data_month, schema, 'week');
+      assert.equal(3, outputs.totals.hours);
+    });
+
+    it('should filter by month name', function() {
+      var outputs = Beardo.magickData(data_month, schema, moment().format('MMM'));
+      assert.equal(6, outputs.totals.hours);
+    });
+
+    it('should filter by a year', function() {
+      var outputs = Beardo.magickData(data_month, schema, moment().format('YYYY'));
+      assert.equal(9, outputs.totals.hours);
     });
   });
 
