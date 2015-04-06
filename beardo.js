@@ -59,6 +59,22 @@ argv.option({
   example: "'beardo.js --fixedprice=1000' or 'beardo.js -p 1000'"
 });
 
+argv.option({
+  name: 'currency',
+  short: 'c',
+  type: 'string',
+  description: 'Sets the output price for the currency',
+  example: "'beardo.js --currency=$' or 'beardo.js -c '$''"
+});
+
+argv.option({
+  name: 'extra',
+  short: 'e',
+  type: 'string',
+  description: 'If your template has an extra information page, add it this way',
+  example: "'beardo.js --extra=\"some extra information\"' or 'beardo.js -e 'Some Extra Information''"
+});
+
 var args = argv.run();
 
 
@@ -111,32 +127,45 @@ Beardo.summonUser = function(callback){
   }
 };
 
-Beardo.magickData = function(data, resource, outputs) {
-
+Beardo.magickData = function(data, schema, date) {
+  var outputs = {
+    totals: {
+      hours: 0,
+      money: 0.00,
+    },
+    cli: '',
+    html: ''
+  };
   // Filter by Date / Type
   var date_filter = 'none';
 
-  if (args.options.date !== undefined) {
+  if (date !== undefined) {
 
     // TODO: would it be easier to just use moment.js for this?
     var is_date_full        = /[0-9]{4}-[0-9]{2}-[0-9]{2}/;
     var is_date_year_month  = /[0-9]{4}-[0-9]{2}/;
     var is_date_month_day   = /[0-9]{2}-[0-9]{2}/;
     var is_date_year        = /[0-9]{4}/;
+    var is_week             = /week/;
+    var is_month            = /month/;
 
-    if (is_date_full.exec(args.options.date)) {
+    if (is_week.exec(date)) {
+      date_filter = 'this_week';
+    } else if (is_month.exec(date)) {
+      date_filter = 'this_month';
+    } else if (is_date_full.exec(date)) {
       date_filter = 'full';
-    } else if (is_date_year_month.exec(args.options.date)) {
+    } else if (is_date_year_month.exec(date)) {
       date_filter = 'year_month';
-    } else if (is_date_month_day.exec(args.options.date)) {
+    } else if (is_date_month_day.exec(date)) {
       date_filter = 'month_day';
-    } else if (is_date_year.exec(args.options.date)) {
+    } else if (is_date_year.exec(date)) {
       date_filter = 'year';
     } else {
       date_filter = 'month';
     }
 
-    console.log('Filter by ' + date_filter + ': ' + args.options.date);
+    console.log('Filter by ' + date_filter + ': ' + date);
   }
 
   // Make Totals
@@ -160,20 +189,19 @@ Beardo.magickData = function(data, resource, outputs) {
   };
 
   _.each(data, function(line, index){
+
     if (index !== 0){ // skip the first line
       var parts = line;
       // Filter Date & Trim
-      var check_date = Beardo.Date[date_filter](parts[0], args.options.date);
+      var check_date = Beardo.Date[date_filter](parts[0], date);
       var check_trim = Beardo.Trim(parts);
 
       if (_.indexOf([check_date, check_trim], false) === -1) {
-        var item_output = Beardo.murmurLineToSchema(line, resource.schema);
-
+        var item_output = Beardo.murmurLineToSchema(line, schema);
         increment_output(item_output);
       }
     }
   });
-
   return outputs;
 }
 
@@ -247,12 +275,16 @@ Beardo.castToHTML = function(outputs, user){
                 generated_date: moment().format('Do MMMM, YYYY'),
                 hours_rows: outputs.html,
                 hours_total: outputs.totals.hours,
-                money_total: outputs.totals.money
+                money_total: outputs.totals.money,
               };
 
               if (user !== undefined){
                 template_data.user = user;
+                template_data.currency = user.currency;
               }
+
+              template_data.currency = args.options.currency || '$';
+              template_data.extra = args.options.extra || '';
 
               var output_html = template_html(template_data);
 
@@ -299,14 +331,7 @@ Beardo.Twirl = function(path, resource, callback) {
             var data = buffer.toString("utf8", 0, buffer.length);
 
             // Totals (for tallying)
-            var outputs = {
-              totals: {
-                hours: 0,
-                money: 0.00,
-              },
-              cli: '',
-              html: ''
-            };
+
 
             // Loop Through Items
             csv.parse(data, function(err, data){
@@ -314,7 +339,7 @@ Beardo.Twirl = function(path, resource, callback) {
                 console.log("Had a problem with the CSV File: ", err);
               }
 
-              outputs = Beardo.magickData(data, resource, outputs);
+              var outputs = Beardo.magickData(data, resource.schema, args.options.date);
 
               // Overwrite outputs.money when we have a fixed price.
               if (args.options.fixedprice) {
@@ -331,7 +356,7 @@ Beardo.Twirl = function(path, resource, callback) {
               console.log(outputs.cli);
               console.log('-----------------------------------------------------------------------------');
               console.log('Total hours worked: ' + outputs.totals.hours);
-              console.log('Total monies earned: $' + outputs.totals.money);
+              console.log('Total monies earned: ' + (args.options.currency || '$') + outputs.totals.money);
 
               Beardo.summonUser(function(user_data) {
                 if (user_data && user_data.error === undefined){
