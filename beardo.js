@@ -1,88 +1,23 @@
-var fs      = require("fs");
+
 var cheerio = require("cheerio");
 var _       = require('underscore');
 var moment  = require('moment');
-var argv    = require('argv');
 var net     = require('net');
 var path    = require('path');
 var repl    = require('repl');
 var csv     = require('csv');
 var wkhtmltopdf = require('wkhtmltopdf');
-var beardoDate  = require('./lib/beard_date.js');
+var beardoDate  = require('./lib/beardo.date.js');
+var argv    = require('./lib/beardo.options.js');
 
-// Args
-argv.option({
-  name: 'input',
-  short: 'i',
-  type: 'string',
-  description: 'Defines schema file to open',
-  example: "'beardo.js --input=value' or 'beardo.js -i data/hours.json"
-});
-
-argv.option({
-  name: 'format',
-  short: 'f',
-  type: 'csv,string',
-  description: 'Defines output formats with html,cli',
-  example: "'beardo.js --format=value' or 'beardo.js -f value1,value2'"
-});
-
-argv.option({
-  name: 'output',
-  short: 'o',
-  type: 'string',
-  description: 'Defines name to save output files as',
-  example: "'beardo.js --save=value' or 'beardo.js -s January Invoice'"
-});
-
-argv.option({
-  name: 'date',
-  short: 'd',
-  type: 'string',
-  description: 'Returns only by current date (currently month only)',
-  example: "'beardo.js --date=value' or 'beardo.js -d January or Jan or 01'"
-});
-
-argv.option({
-  name: 'trim',
-  short: 't',
-  type: 'list,string',
-  description: 'Trims output by a given string value declared in schema',
-  example: "'beardo.js --trim=value' or 'beardo.js -t Client'"
-});
-
-argv.option({
-  name: 'fixedprice',
-  short: 'p',
-  type: 'float',
-  description: 'Builds the invoice to a fixed price',
-  example: "'beardo.js --fixedprice=1000' or 'beardo.js -p 1000'"
-});
-
-argv.option({
-  name: 'currency',
-  short: 'c',
-  type: 'string',
-  description: 'Sets the output price for the currency',
-  example: "'beardo.js --currency=$' or 'beardo.js -c '$''"
-});
-
-argv.option({
-  name: 'extra',
-  short: 'e',
-  type: 'string',
-  description: 'If your template has an extra information page, add it this way',
-  example: "'beardo.js --extra=\"some extra information\"' or 'beardo.js -e 'Some Extra Information''"
-});
-
+// Run the imported options.
 var args = argv.run();
-
 
 // File Manipulation
 var SaveFile = require('./lib/save_file');
 
 // Beardo
-var Beardo = {};
+var Beardo = require('./lib/beardo.prepareRecipe.js');
 
 // Load Beardo.Date
 Beardo.Date = beardoDate;
@@ -103,18 +38,8 @@ Beardo.Trim = function(parts) {
 };
 
 
-Beardo.getIngredients = function(config_file, callback){
-  // Finds the config file if it exists.
-  fs.exists(config_file, function(exists) {
-    if (exists) {
-      console.log("Found a config file");
-      var contents = fs.readFileSync(config_file);
-      var config = JSON.parse(contents);
-      return callback(config);
-    } else {
-      return callback({'exists': exists})
-    }
-  });
+Beardo.getClient = function() {
+
 }
 
 Beardo.summonUser = function(callback){
@@ -205,41 +130,6 @@ Beardo.magickData = function(data, schema, date) {
   return outputs;
 }
 
-Beardo.murmurLineToSchema = function(parts, schema, fields) {
-  // line is the line being processed,
-  // schema is the schema provided in the resource,
-  // fields is the fields required in the output, if blank it
-  // defaults to everything in the schema.
-  // var parts = line.split(',');
-  var lineItem = {};
-
-  _.each(schema.fields, function(field, index){
-    if (fields === undefined || fields.indexOf(field.name) !== -1){
-      var parsed;
-
-      if (field.type === 'date') {
-        parsed = moment(parts[index]).format('D MMM');
-      }
-      if (field.type === 'number'){
-        parsed = parseFloat(parts[index]);
-      }
-      if (field.type === 'string'){
-        parsed = parts[index].trim();
-      }
-      if (field.type === 'boolean'){
-        parsed = parts[index];
-        if (parsed === 'yes') parsed = true;
-        else if (parsed === 'no') parse = false;
-      }
-
-      // For Output
-      lineItem[field.name] = parsed;
-
-    }
-  });
-  return lineItem;
-};
-
 Beardo.castToHTML = function(outputs, user){
   // Output HTML
 
@@ -250,56 +140,45 @@ Beardo.castToHTML = function(outputs, user){
     console.log("Using template:", template);
     var template_path = './templates/' + template + '.html';
 
-    // Open
-    fs.exists(template_path, function(exists) {
-      if (exists) {
+    Beardo.readManuscript(template_path)
+      .then(function(buffer) {
+        console.log("Beardo loaded template");
+        var output_name = 'Invoice - ' + moment().format('D MMMM YYYY');
+        if (args.options.output) {
+          output_name = args.options.output;
+        }
 
-        console.log('Beardo loaded template');
-        fs.stat(template_path, function(error, stats) {
-          fs.open(template_path, "r", function(error, fd) {
-            var buffer = new Buffer(stats.size);
-            fs.read(fd, buffer, 0, buffer.length, null, function(error, bytesRead, buffer) {
-              fs.close(fd);
+        var template_file = buffer.toString("utf8", 0, buffer.length);
+        var template_html = _.template(template_file);
 
-              // Invoice Name
-              var output_name = 'Invoice - ' + moment().format('D MMMM YYYY');
-              if (args.options.output) {
-                output_name = args.options.output;
-              }
+        var template_data = {
+          generated_name: output_name,
+          generated_date: moment().format('Do MMMM, YYYY'),
+          hours_rows: outputs.html,
+          hours_total: outputs.totals.hours,
+          money_total: outputs.totals.money,
+        };
 
-              var template_file = buffer.toString("utf8", 0, buffer.length);
-              var template_html = _.template(template_file);
+        if (user !== undefined){
+          template_data.user = user;
+          template_data.currency = user.currency;
+        }
 
-              var template_data = {
-                generated_name: output_name,
-                generated_date: moment().format('Do MMMM, YYYY'),
-                hours_rows: outputs.html,
-                hours_total: outputs.totals.hours,
-                money_total: outputs.totals.money,
-              };
+        template_data.currency = args.options.currency || '$';
+        template_data.extra = args.options.extra || '';
 
-              if (user !== undefined){
-                template_data.user = user;
-                template_data.currency = user.currency;
-              }
+        var output_html = template_html(template_data);
 
-              template_data.currency = args.options.currency || '$';
-              template_data.extra = args.options.extra || '';
+        // Save HTML file
+        if (_.indexOf(args.options.format, 'html') > -1) {
+          var saveFile = new SaveFile(fs, 'output/' + output_name + '.html', output_html);
+        }
 
-              var output_html = template_html(template_data);
-
-              // Save HTML file
-              if (_.indexOf(args.options.format, 'html') > -1) {
-                var saveFile = new SaveFile(fs, 'output/' + output_name + '.html', output_html);
-              }
-
-              // Save PDF file
-              Beardo.castHTMLToPDF(output_html, output_name);
-            });
-          });
-        });
-      }
-    });
+        // Save PDF file
+        Beardo.castHTMLToPDF(output_html, output_name);
+      }, then(function(err) {
+        console.log("Failed to find template.")
+      }));
   }
 }
 
@@ -316,116 +195,84 @@ Beardo.castHTMLToPDF = function(output_html, output_name){
 // Load Data & Parse
 Beardo.Twirl = function(path, resource, callback) {
   var resource_file = path + '/' + resource.path;
-  console.log(resource_file);
-  fs.exists(resource_file, function(exists) {
-  	if (exists) {
 
-      fs.stat(resource_file, function(error, stats) {
-        fs.open(resource_file, "r", function(error, fd) {
+  Beardo.readManuscript(resource_file)
+    .then(function(buffer) {
+      var data = buffer.toString("utf8", 0, buffer.length);
 
-          var buffer = new Buffer(stats.size);
+      // Totals (for tallying)
 
-          fs.read(fd, buffer, 0, buffer.length, null, function(error, bytesRead, buffer) {
-            fs.close(fd);
+      // Loop Through Items
+      csv.parse(data, function(err, data){
+        if (err){
+          console.log("Had a problem with the CSV File: ", err);
+        }
 
-            var data = buffer.toString("utf8", 0, buffer.length);
+        var outputs = Beardo.magickData(data, resource.schema, args.options.date);
 
-            // Totals (for tallying)
+        // Overwrite outputs.money when we have a fixed price.
+        if (args.options.fixedprice) {
+          outputs.totals.money = +args.options.fixedprice
+        }
 
+        if (args.options.trim !== undefined) {
+          outputs.clients = Beardo.getClient(args.options.trim);
+        }
 
-            // Loop Through Items
-            csv.parse(data, function(err, data){
-              if (err){
-                console.log("Had a problem with the CSV File: ", err);
-              }
+        // FIXME: OUTPUT STUFF (Refactor out)
+        if (args.options.format) {
+          console.log('-----------------------------------------------------------------------------');
+          console.log('Output Formats: ' + args.options.format.join(','));
+        }
 
-              var outputs = Beardo.magickData(data, resource.schema, args.options.date);
+        console.log('-----------------------------------------------------------------------------');
+        console.log(outputs.cli);
+        console.log('-----------------------------------------------------------------------------');
+        console.log('Total hours worked: ' + outputs.totals.hours);
+        console.log('Total monies earned: ' + (args.options.currency || '$') + outputs.totals.money);
 
-              // Overwrite outputs.money when we have a fixed price.
-              if (args.options.fixedprice) {
-                outputs.totals.money = +args.options.fixedprice
-              }
-
-              // FIXME: OUTPUT STUFF (Refactor out)
-              if (args.options.format) {
-                console.log('-----------------------------------------------------------------------------');
-                console.log('Output Formats: ' + args.options.format.join(','));
-              }
-
-              console.log('-----------------------------------------------------------------------------');
-              console.log(outputs.cli);
-              console.log('-----------------------------------------------------------------------------');
-              console.log('Total hours worked: ' + outputs.totals.hours);
-              console.log('Total monies earned: ' + (args.options.currency || '$') + outputs.totals.money);
-
-              Beardo.summonUser(function(user_data) {
-                if (user_data && user_data.error === undefined){
-                  Beardo.castToHTML(outputs, user_data);
-                } else {
-                  Beardo.castToHTML(outputs, undefined);
-                }
-                // return callback for test purposes, and for future func?
-                if (callback) return callback();
-              })
-            });
-          });
-        });
+        Beardo.summonUser(function(user_data) {
+          if (user_data && user_data.error === undefined){
+            Beardo.castToHTML(outputs, user_data);
+          } else {
+            Beardo.castToHTML(outputs, undefined);
+          }
+          // return callback for test purposes, and for future func?
+          if (callback) return callback();
+        })
       });
-  	}
-  	else {
+    }, function(error) {
       console.log('awwww no data');
-      // return callback for test purposes, and for future func?
-      if (callback) return callback({'error': '404'});
-  	}
-  });
-
+      if (callback) return callback(Error);
+    });
 };
 
 
 // Load Schema
 Beardo.Grow = function(schema_file) {
 
-  fs.exists(schema_file, function(exists) {
-  	if (exists) {
+  var path = require('path').dirname(schema_file);
+  console.log(path);
 
-  		console.log('Splendid schema exists open it up');
+  Beardo.readManuscript(schema_file)
+    .then(function(buffer) {
+      var json = buffer.toString("utf8", 0, buffer.length);
+      var schema = JSON.parse(json);
 
-      var path = require('path').dirname(schema_file);
+      console.log('Get item from schema: ' + schema[0].name);
 
-      fs.stat(schema_file, function(error, stats) {
-        fs.open(schema_file, "r", function(error, fd) {
+      // If Schema Contains Multiple
+      _.each(schema[0].resources, function(resource, key) {
 
-          var buffer = new Buffer(stats.size);
+        console.log('Twirl resource: ' + resource.path);
 
-          fs.read(fd, buffer, 0, buffer.length, null, function(error, bytesRead, buffer) {
-            fs.close(fd);
+        // Open Data
+        Beardo.Twirl(path, resource);
 
-            var json = buffer.toString("utf8", 0, buffer.length);
-            var schema = JSON.parse(json);
-
-            console.log('Get item from schema: ' + schema[0].name);
-
-            // If Schema Contains Multiple
-            _.each(schema[0].resources, function(resource, key) {
-
-              console.log('Twirl resource: ' + resource.path);
-
-              // Open Data
-              Beardo.Twirl(path, resource);
-
-            });
-
-          });
-
-        });
       });
-
-    }
-    else {
-      console.log('awwww no schema');
-    }
-
-  });
+    }, function(error) {
+      console.log(error);
+    });
 };
 
 // Start It Up
