@@ -79,9 +79,7 @@ describe('Beardo', function(){
         '3', 'started tinkering', 'beardo', 'home', '0.00'],
       [ moment().add(8, 'days').format('YYYY-MM-DD'),
         '3', 'started tinkering', 'beardo', 'home', '0.00'],
-      [ moment().subtract(2, 'years')
-                .subtract(2, 'months')
-                .format('YYYY-MM-DD'),
+      [ moment().subtract(2, 'years').format('YYYY-MM-DD'),
         '3', 'started tinkering', 'beardo', 'home', '0.00']
       ];
 
