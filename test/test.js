@@ -1,5 +1,5 @@
 var assert = require("assert");
-var Beardo = require("../Beardo");
+var Beardo = require("../beardo");
 var moment = require('moment');
 
 describe('Beardo', function(){
