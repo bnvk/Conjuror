@@ -38,9 +38,9 @@ em { font-style:italic; }
 */
 * { margin: 0; }
 body    { height: 100%; margin: 0; font-family: 'Charter', Georgia, serif; font-size: 14px; line-height: 21px; }
-h1      { font-size: 28px; line-height: 1.6; margin: 0 0 10px 0; padding: 0px; font-weight: bold; }
-h2      { font-size: 26px; line-height: 1.6; margin: 0 0 10px 0; padding: 0px; font-weight: bold; }
-h3      { font-size: 20px; line-height: 1.6; margin: 0 0 10px 0; padding: 0px; font-weight: bold; }
+h1      { font-size: 26px; line-height: 1.6; margin: 0 0 10px 0; padding: 0px; font-weight: bold; }
+h2      { font-size: 20px; line-height: 1.6; margin: 0 0 10px 0; padding: 0px; font-weight: bold; }
+h3      { font-size: 18px; line-height: 1.6; margin: 0 0 10px 0; padding: 0px; font-weight: bold; }
 h4      { font-size: 16px; line-height: 1.6; margin: 0 0 10px 0; font-weight: bold; }
 a:link      { color: #bd0707; text-decoration: none; line-height: 21px; font-weight: bold; }
 a:visited   { color: #bd0707; text-decoration: none; }
@@ -99,13 +99,16 @@ dd { margin-left: 1em; font-style: italic; }
     <div class="left">
       <h1><%= generated_name %></h1>
       <h4><%= generated_date %></h4>
-      <a href="mailto:<%= user.email %>"><%= user.email %></a><br>
+      <%= client.contact %><br/>
+      <%= client.tax_identification %><br/>
+      <%= client.address %>
     </div>
 
     <div class="right text-right">
       <h1><%= user.display_name %></h1>
 
       <a href="<%= user.website %>"><%= user.website %></a><br>
+      <a href="mailto:<%= user.email %>"><%= user.email %></a><br>
     </div>
 
     <div class="clear"></div>

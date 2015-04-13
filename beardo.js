@@ -1,4 +1,4 @@
-
+var Promise = require('es6-promise').Promise;
 var cheerio = require("cheerio");
 var _       = require('underscore');
 var moment  = require('moment');
@@ -38,8 +38,21 @@ Beardo.Trim = function(parts) {
 };
 
 
-Beardo.getClient = function() {
+Beardo.getClient = function(client_file, trim, callback) {
+  Beardo.readData(client_file, function(data) {
+    var foundClient = _.find(data.data, function(line, index){
+      var lineItem = Beardo.murmurLineToSchema(line, data.schema);
+      return lineItem['slug'] === trim[0];
+    });
 
+    return callback(Beardo.murmurLineToSchema(foundClient, data.schema));
+  })
+    // .then(function(data) {
+
+    // }).catch(function(err){
+    //   console.log('no client information');
+    //   // return callback(undefined);
+    // });
 }
 
 Beardo.summonUser = function(callback){
@@ -137,14 +150,15 @@ Beardo.castToHTML = function(outputs, user){
 
     // Get HTML Template
     var template = args.config.invoice_template || 'invoice';
-    console.log("Using template:", template);
     var template_path = './templates/' + template + '.html';
-
     Beardo.readManuscript(template_path)
       .then(function(buffer) {
         console.log("Beardo loaded template");
         var output_name = 'Invoice - ' + moment().format('D MMMM YYYY');
-        if (args.options.output) {
+
+        if (outputs.client) {
+          output_name = outputs.client.name
+        } else if (args.options.output) {
           output_name = args.options.output;
         }
 
@@ -152,6 +166,7 @@ Beardo.castToHTML = function(outputs, user){
         var template_html = _.template(template_file);
 
         var template_data = {
+          client: outputs.client,
           generated_name: output_name,
           generated_date: moment().format('Do MMMM, YYYY'),
           hours_rows: outputs.html,
@@ -176,9 +191,9 @@ Beardo.castToHTML = function(outputs, user){
 
         // Save PDF file
         Beardo.castHTMLToPDF(output_html, output_name);
-      }, then(function(err) {
+      }, function(err) {
         console.log("Failed to find template.")
-      }));
+      });
   }
 }
 
@@ -193,56 +208,54 @@ Beardo.castHTMLToPDF = function(output_html, output_name){
 }
 
 // Load Data & Parse
-Beardo.Twirl = function(path, resource, callback) {
+Beardo.Twirl = function(path, resource, client_path, callback) {
   var resource_file = path + '/' + resource.path;
 
   Beardo.readManuscript(resource_file)
     .then(function(buffer) {
       var data = buffer.toString("utf8", 0, buffer.length);
 
-      // Totals (for tallying)
-
       // Loop Through Items
       csv.parse(data, function(err, data){
-        if (err){
-          console.log("Had a problem with the CSV File: ", err);
-        }
+        Beardo.getClient(client_path, args.options.trim, function(client) {
 
-        var outputs = Beardo.magickData(data, resource.schema, args.options.date);
-
-        // Overwrite outputs.money when we have a fixed price.
-        if (args.options.fixedprice) {
-          outputs.totals.money = +args.options.fixedprice
-        }
-
-        if (args.options.trim !== undefined) {
-          outputs.clients = Beardo.getClient(args.options.trim);
-        }
-
-        // FIXME: OUTPUT STUFF (Refactor out)
-        if (args.options.format) {
-          console.log('-----------------------------------------------------------------------------');
-          console.log('Output Formats: ' + args.options.format.join(','));
-        }
-
-        console.log('-----------------------------------------------------------------------------');
-        console.log(outputs.cli);
-        console.log('-----------------------------------------------------------------------------');
-        console.log('Total hours worked: ' + outputs.totals.hours);
-        console.log('Total monies earned: ' + (args.options.currency || '$') + outputs.totals.money);
-
-        Beardo.summonUser(function(user_data) {
-          if (user_data && user_data.error === undefined){
-            Beardo.castToHTML(outputs, user_data);
-          } else {
-            Beardo.castToHTML(outputs, undefined);
+          if (err){
+            console.log("Had a problem with the CSV File: ", err);
           }
-          // return callback for test purposes, and for future func?
-          if (callback) return callback();
+
+          var outputs = Beardo.magickData(data, resource.schema, args.options.date);
+          outputs.client = client;
+
+          // Overwrite outputs.money when we have a fixed price.
+          if (args.options.fixedprice) {
+            outputs.totals.money = +args.options.fixedprice
+          }
+
+          // FIXME: OUTPUT STUFF (Refactor out)
+          if (args.options.format) {
+            console.log('-----------------------------------------------------------------------------');
+            console.log('Output Formats: ' + args.options.format.join(','));
+          }
+
+          console.log('-----------------------------------------------------------------------------');
+          console.log(outputs.cli);
+          console.log('-----------------------------------------------------------------------------');
+          console.log('Total hours worked: ' + outputs.totals.hours);
+          console.log('Total monies earned: ' + (args.options.currency || '$') + outputs.totals.money);
+
+          Beardo.summonUser(function(user_data) {
+            if (user_data && user_data.error === undefined){
+              Beardo.castToHTML(outputs, user_data);
+            } else {
+              Beardo.castToHTML(outputs, undefined);
+            }
+            // return callback for test purposes, and for future func?
+            if (callback) return callback();
+          })
         })
       });
-    }, function(error) {
-      console.log('awwww no data');
+    }).catch(function(error) {
+      console.log(error);
       if (callback) return callback(Error);
     });
 };
@@ -251,8 +264,7 @@ Beardo.Twirl = function(path, resource, callback) {
 // Load Schema
 Beardo.Grow = function(schema_file) {
 
-  var path = require('path').dirname(schema_file);
-  console.log(path);
+  var dataPath = require('path').dirname(schema_file);
 
   Beardo.readManuscript(schema_file)
     .then(function(buffer) {
@@ -265,12 +277,11 @@ Beardo.Grow = function(schema_file) {
       _.each(schema[0].resources, function(resource, key) {
 
         console.log('Twirl resource: ' + resource.path);
-
         // Open Data
-        Beardo.Twirl(path, resource);
+        Beardo.Twirl(dataPath, resource, schema[0].clients);
 
       });
-    }, function(error) {
+    }).catch(function(error) {
       console.log(error);
     });
 };

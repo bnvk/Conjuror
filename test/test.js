@@ -4,6 +4,12 @@ var moment = require('moment');
 
 describe('Beardo', function(){
 
+  describe('getClient', function(){
+    it('should get a client file', function(done){
+
+    })
+  });
+
   describe('twirl', function(){
     var config = {
         'path':'test_twirl.csv',
@@ -36,14 +42,14 @@ describe('Beardo', function(){
         }
     };
     it('should twirl a resource', function(done){
-      Beardo.Twirl('test', config, function(err){
+      Beardo.Twirl('test', config, {}, function(err){
         assert.equal(err, undefined);
         done();
       });
     });
 
     it('should return an error if there is no CSV data', function(done){
-      Beardo.Twirl('blah', config, function(err){
+      Beardo.Twirl('blah', config, {}, function(err){
         assert.notEqual(err, undefined);
         done();
       });
