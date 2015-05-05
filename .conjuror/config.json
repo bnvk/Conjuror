@@ -1,0 +1,11 @@
+{
+  "invoice_template": "wizard",
+  "user": {
+    "display_name": "Simon Vansintjan",
+    "address": "Nevelestraat 5\n 9850 Hansbeke\n Belgium",
+    "email": "svansintjan@gmail.com",
+    "website": "simon.vansintjan.net",
+    "currency": "$",
+    "extra": "<p>BTW Verlegd; Ondernemings Nummer: (BE) 0541.453.010<br/></p>"
+  }
+}

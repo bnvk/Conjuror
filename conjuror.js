@@ -42,13 +42,16 @@ Conjuror.getClient = function(client_file, trim, callback) {
   // the callback function which acts on the client object.
   Conjuror.readData(client_file, function(data) {
     // TODO: We need *way* better error handling here.
-    if (data.data !== undefined) {
+    if (data.data !== undefined && trim !== undefined) {
       data.data.splice(0,1);
       clientData = data.data;
       var foundClient = _.find(clientData, function(line, index){
-        var lineItem = Conjuror.murmurLineToSchema(line, data.schema);
-        console.log(lineItem.slug, trim, lineItem.slug == trim)
-        return lineItem.slug === trim;
+        if (line) {
+          var lineItem = Conjuror.murmurLineToSchema(line, data.schema);
+          return lineItem.slug === trim;
+        } else {
+          return false;
+        }
       });
       return callback(Conjuror.murmurLineToSchema(foundClient, data.schema));
     } else {
@@ -165,7 +168,8 @@ Conjuror.castToHTML = function(outputs, user){
         var output_name = 'Invoice - ' + moment().format('D MMMM YYYY');
 
         if (outputs.client) {
-          output_name = outputs.client.name;
+          output_name = outputs.client.name + ' - ' +
+            moment().format('DD/MM/YYYY');
         } else if (args.options.output) {
           output_name = args.options.output;
         }
@@ -194,7 +198,7 @@ Conjuror.castToHTML = function(outputs, user){
 
         // Save HTML file
         if (_.indexOf(args.options.format, 'html') > -1) {
-          var saveFile = new SaveFile(fs, 'output/' + output_name + '.html', output_html);
+          var saveFile = SaveFile(fs, 'output/' + output_name + '.html', output_html);
         }
 
         // Save PDF file
@@ -294,7 +298,6 @@ Conjuror.Twirl = function(path, resource, client_path, callback) {
 
 // Load Schema
 Conjuror.Grow = function(schema_file) {
-  console.log(schema_file);
   var dataPath = require('path').dirname(schema_file);
 
   Conjuror.readManuscript(schema_file)

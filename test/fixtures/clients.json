@@ -1,0 +1,37 @@
+[{
+  "name": "hours",
+  "title": "This collection represents hours worked for openfarm",
+  "version": "2015",
+  "last_updated": "2015-04-13",
+  "resources": [{
+      "path":"clients.csv",
+      "schema": {
+        "fields": [{
+            "name": "slug",
+            "title": "slug used for the client",
+            "type": "string"
+          },{
+            "name": "name",
+            "title": "Full client name",
+            "type": "string"
+          },{
+            "name": "address",
+            "title": "Full client address",
+            "type": "string"
+          },{
+            "name": "tax_identification",
+            "title": "Tax ID",
+            "type": "string"
+          },{
+            "name": "contact",
+            "title": "Contact at client",
+            "type": "string"
+          },{
+            "name": "contact_email",
+            "title": "Contact's email address",
+            "type": "string"
+          }
+        ]
+     }
+  }]
+}]
