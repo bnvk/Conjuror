@@ -83,10 +83,8 @@ The track tool will then open that file and create suggestions that make it easi
 
 *Tracker tool will eventually be merged into a unified CLI once [Issue #17](https://github.com/bnvk/Conjuror/issues/17) is completed*
 
-### Okay, What's With the Weird Name?
+### Why The Magical Name & Terminology?
 
-Did you know beards could tell time? No truly, Beards are a magical wonder of nature. Much like the rings of old growth tree, each and every beard contains a unique record of the health and life lived by the beard grower. Was the grower properly nourished throughout the cold winter months? Do they have a health sex life? Do they drink too much alcohol? A good proper full beard knows all.
-
-Since I am one of those of those rare individuals who suffer from Beard envy, in that I cannot really grow a proper beard, I decided to make a prosthetic beard- or rather an experiment in open data and time tracking / invoicing software that keeps record of my work and activities.
+Well, this used to be called Beardo, which was a joke, but then I realized a big part of the name was because I really only wanted to use this icon of a magical bearded wizard. It's also largely inspired by the [@CyberWizardInstitute](https://github.com/CyberWizardInstitute).
 
 ![Made in Berlin](images/Made-in-Berlin.png)
