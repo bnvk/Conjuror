@@ -1,4 +1,3 @@
-
 var cheerio = require("cheerio");
 var _       = require('underscore');
 var moment  = require('moment');
@@ -6,9 +5,9 @@ var net     = require('net');
 var path    = require('path');
 var repl    = require('repl');
 var csv     = require('csv');
-var wkhtmltopdf = require('wkhtmltopdf');
-var beardoDate  = require('./lib/beardo.date.js');
-var argv    = require('./lib/beardo.options.js');
+var wkhtmltopdf   = require('wkhtmltopdf');
+var conjurorDate  = require('./lib/conjuror.date.js');
+var argv          = require('./lib/conjuror.options.js');
 
 // Run the imported options.
 var args = argv.run();
@@ -17,12 +16,12 @@ var args = argv.run();
 var SaveFile = require('./lib/save_file');
 
 // Beardo
-var Beardo = require('./lib/beardo.prepareRecipe.js');
+var Conjuror = require('./lib/conjuror.prepareRecipe.js');
 
-// Load Beardo.Date
-Beardo.Date = beardoDate;
+// Load Conjuror.Date
+Conjuror.Date = conjurorDate;
 
-Beardo.Trim = function(parts) {
+Conjuror.Trim = function(parts) {
   if (args.options.trim !== undefined) {
     var part = parts[3].trim();
 
@@ -38,11 +37,11 @@ Beardo.Trim = function(parts) {
 };
 
 
-Beardo.getClient = function() {
+Conjuror.getClient = function() {
 
 }
 
-Beardo.summonUser = function(callback){
+Conjuror.summonUser = function(callback){
   // TODO: We should probably remove the depency on args here, and pass it in
   // as a variable.
   if (args.config !== undefined && args.config.user !== undefined){
@@ -52,7 +51,7 @@ Beardo.summonUser = function(callback){
   }
 };
 
-Beardo.magickData = function(data, schema, date) {
+Conjuror.magickData = function(data, schema, date) {
   var outputs = {
     totals: {
       hours: 0,
@@ -105,7 +104,7 @@ Beardo.magickData = function(data, schema, date) {
     // HTML format
     if (_.indexOf(args.options.format, 'html') > -1 || _.indexOf(args.options.format, 'pdf') > -1) {
       outputs.html += '<tr>\n';
-      outputs.html += '   <td>' + item.date + '</td>\n';
+      outputs.html += '   <td class="width-50">' + item.date + '</td>\n';
       outputs.html += '   <td class="text-right">' + item.time + '</td>\n';
       outputs.html += '   <td class="text-left"> hrs</td>\n';
       outputs.html += '   <td>' + item.description + '</td>\n';
@@ -118,11 +117,11 @@ Beardo.magickData = function(data, schema, date) {
     if (index !== 0){ // skip the first line
       var parts = line;
       // Filter Date & Trim
-      var check_date = Beardo.Date[date_filter](parts[0], date);
-      var check_trim = Beardo.Trim(parts);
+      var check_date = Conjuror.Date[date_filter](parts[0], date);
+      var check_trim = Conjuror.Trim(parts);
 
       if (_.indexOf([check_date, check_trim], false) === -1) {
-        var item_output = Beardo.murmurLineToSchema(line, schema);
+        var item_output = Conjuror.murmurLineToSchema(line, schema);
         increment_output(item_output);
       }
     }
@@ -130,7 +129,7 @@ Beardo.magickData = function(data, schema, date) {
   return outputs;
 }
 
-Beardo.castToHTML = function(outputs, user){
+Conjuror.castToHTML = function(outputs, user){
   // Output HTML
 
   if (_.indexOf(args.options.format, 'html') > -1 || _.indexOf(args.options.format, 'pdf') > -1) {
@@ -140,9 +139,9 @@ Beardo.castToHTML = function(outputs, user){
     console.log("Using template:", template);
     var template_path = './templates/' + template + '.html';
 
-    Beardo.readManuscript(template_path)
+    Conjuror.readManuscript(template_path)
       .then(function(buffer) {
-        console.log("Beardo loaded template");
+        console.log("Conjuror loaded template");
         var output_name = 'Invoice - ' + moment().format('D MMMM YYYY');
         if (args.options.output) {
           output_name = args.options.output;
@@ -175,14 +174,14 @@ Beardo.castToHTML = function(outputs, user){
         }
 
         // Save PDF file
-        Beardo.castHTMLToPDF(output_html, output_name);
-      }, then(function(err) {
+        Conjuror.castHTMLToPDF(output_html, output_name);
+      }).then(function(err) {
         console.log("Failed to find template.")
-      }));
+      });
   }
 }
 
-Beardo.castHTMLToPDF = function(output_html, output_name){
+Conjuror.castHTMLToPDF = function(output_html, output_name){
   if (_.indexOf(args.options.format, 'pdf') > -1) {
     console.log('Saving as a PDF');
     wkhtmltopdf(output_html, {
@@ -193,10 +192,10 @@ Beardo.castHTMLToPDF = function(output_html, output_name){
 }
 
 // Load Data & Parse
-Beardo.Twirl = function(path, resource, callback) {
+Conjuror.Twirl = function(path, resource, callback) {
   var resource_file = path + '/' + resource.path;
 
-  Beardo.readManuscript(resource_file)
+  Conjuror.readManuscript(resource_file)
     .then(function(buffer) {
       var data = buffer.toString("utf8", 0, buffer.length);
 
@@ -208,7 +207,7 @@ Beardo.Twirl = function(path, resource, callback) {
           console.log("Had a problem with the CSV File: ", err);
         }
 
-        var outputs = Beardo.magickData(data, resource.schema, args.options.date);
+        var outputs = Conjuror.magickData(data, resource.schema, args.options.date);
 
         // Overwrite outputs.money when we have a fixed price.
         if (args.options.fixedprice) {
@@ -216,7 +215,7 @@ Beardo.Twirl = function(path, resource, callback) {
         }
 
         if (args.options.trim !== undefined) {
-          outputs.clients = Beardo.getClient(args.options.trim);
+          outputs.clients = Conjuror.getClient(args.options.trim);
         }
 
         // FIXME: OUTPUT STUFF (Refactor out)
@@ -231,11 +230,11 @@ Beardo.Twirl = function(path, resource, callback) {
         console.log('Total hours worked: ' + outputs.totals.hours);
         console.log('Total monies earned: ' + (args.options.currency || '$') + outputs.totals.money);
 
-        Beardo.summonUser(function(user_data) {
+        Conjuror.summonUser(function(user_data) {
           if (user_data && user_data.error === undefined){
-            Beardo.castToHTML(outputs, user_data);
+            Conjuror.castToHTML(outputs, user_data);
           } else {
-            Beardo.castToHTML(outputs, undefined);
+            Conjuror.castToHTML(outputs, undefined);
           }
           // return callback for test purposes, and for future func?
           if (callback) return callback();
@@ -249,12 +248,12 @@ Beardo.Twirl = function(path, resource, callback) {
 
 
 // Load Schema
-Beardo.Grow = function(schema_file) {
+Conjuror.Grow = function(schema_file) {
 
   var path = require('path').dirname(schema_file);
   console.log(path);
 
-  Beardo.readManuscript(schema_file)
+  Conjuror.readManuscript(schema_file)
     .then(function(buffer) {
       var json = buffer.toString("utf8", 0, buffer.length);
       var schema = JSON.parse(json);
@@ -267,7 +266,7 @@ Beardo.Grow = function(schema_file) {
         console.log('Twirl resource: ' + resource.path);
 
         // Open Data
-        Beardo.Twirl(path, resource);
+        Conjuror.Twirl(path, resource);
 
       });
     }, function(error) {
@@ -277,14 +276,14 @@ Beardo.Grow = function(schema_file) {
 
 // Start It Up
 if (args.options.input !== undefined) {
-  Beardo.getIngredients('.beardo/config.json', function(config){
+  Conjuror.getIngredients('.conjuror/config.json', function(config){
     // don't really care of the status of config for the moment.
     // let's just supply sensible defaults.
     args.config = config;
-    Beardo.Grow(args.options.input);
+    Conjuror.Grow(args.options.input);
   });
 } else {
   console.log('404 No beard found \nAre you sure you specified an --input -i value');
 }
 
-module.exports = Beardo;
+module.exports = Conjuror;

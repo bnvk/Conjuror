@@ -1,9 +1,9 @@
 {
-  "name": "beardo",
-  "description": "A magical CSV data parsing and outputing wizard",
+  "name": "Conjuror",
+  "description": "A magical CSV data parsing and outputing wizard or witch",
   "version": "0.1.1",
   "repository": {
-    "url": "https://github.com/bnvk/Beardo"
+    "url": "https://github.com/bnvk/Conjuror"
   },
   "main": "./lib/",
   "keywords": [
