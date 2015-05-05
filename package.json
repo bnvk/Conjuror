@@ -1,7 +1,7 @@
 {
   "name": "Conjuror",
   "description": "A magical CSV data parsing and outputing wizard or witch",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "repository": {
     "url": "https://github.com/bnvk/Conjuror"
   },
@@ -15,15 +15,9 @@
   "bin": {
     "beardo": "./bin/uppercaseme"
   },
-  "author": {
-    "name": "Brennan Novak",
-    "email": "hi@bnvk.me"
-  },
+  "author": "Brennan Novak <hi@bnvk.me>",
   "contributors": [
-    {
-      "name": "Simon Vansintjan",
-      "email": "svansintjan@gmail.com"
-    }
+    "Simon Vansintjan <svansintjan@gmail.com>"
   ],
   "dependencies": {
     "argv": "0.0.2",
@@ -41,5 +35,16 @@
   },
   "devDependencies": {
     "csv": "^0.4.1"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/bnvk/Conjuror/issues"
+  },
+  "homepage": "https://github.com/bnvk/Conjuror",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "license": "AGPLv3"
 }
