@@ -13,7 +13,7 @@
     "pdf"
   ],
   "bin": {
-    "beardo": "./bin/uppercaseme"
+    "conjuror": "./bin/uppercaseme"
   },
   "author": "Brennan Novak <hi@bnvk.me>",
   "contributors": [
