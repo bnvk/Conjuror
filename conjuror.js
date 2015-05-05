@@ -72,9 +72,12 @@ Conjuror.magickData = function(data, schema, date) {
     var is_date_year        = /[0-9]{4}/;
     var is_week             = /week/;
     var is_month            = /month/;
+    var is_today            = /today/;
 
     if (is_week.exec(date)) {
       date_filter = 'this_week';
+    } else if (is_today.exec(date)) {
+      date_filter = 'today';
     } else if (is_month.exec(date)) {
       date_filter = 'this_month';
     } else if (is_date_full.exec(date)) {
@@ -174,8 +177,8 @@ Conjuror.castToHTML = function(outputs, user){
         }
 
         // Save PDF file
-        Conjuror.castHTMLToPDF(output_html, output_name);
-      }).then(function(err) {
+        Beardo.castHTMLToPDF(output_html, output_name);
+      }, function(err) {
         console.log("Failed to find template.")
       });
   }
