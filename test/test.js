@@ -1,12 +1,15 @@
 var assert = require("assert");
-var Beardo = require("../beardo");
+var Conjuror = require("../conjuror");
 var moment = require('moment');
 
-describe('Beardo', function(){
+describe('Conjuror', function(){
 
   describe('getClient', function(){
     it('should get a client file', function(done){
-
+      Conjuror.getClient('test/fixtures/clients.json', 'client1', function(client) {
+        assert.equal(client.slug, 'client1');
+        done();
+      })
     })
   });
 
@@ -42,14 +45,15 @@ describe('Beardo', function(){
         }
     };
     it('should twirl a resource', function(done){
-      Beardo.Twirl('test', config, {}, function(err){
+      Conjuror.Twirl('test/fixtures', config, {}, function(err){
+        // This test needs to be elaborated on.
         assert.equal(err, undefined);
         done();
       });
     });
 
     it('should return an error if there is no CSV data', function(done){
-      Beardo.Twirl('blah', config, {}, function(err){
+      Conjuror.Twirl('blah', config, {}, function(err){
         assert.notEqual(err, undefined);
         done();
       });
@@ -58,19 +62,19 @@ describe('Beardo', function(){
 
   describe('date', function(){
     it('should ignore March dates when looking for "Feb"', function() {
-      assert.equal(false, Beardo.Date.month('2015-03-05', 'Feb'));
+      assert.equal(false, Conjuror.Date.month('2015-03-05', 'Feb'));
     });
     it('should accept Feb dates when looking for "Feb"', function() {
-      assert.equal(true, Beardo.Date.month('2015-02-05', 'Feb'));
+      assert.equal(true, Conjuror.Date.month('2015-02-05', 'Feb'));
     });
     it('should accept Feb dates when looking for "02"', function() {
-      assert.equal(true, Beardo.Date.month('2015-02-05', '02'));
+      assert.equal(true, Conjuror.Date.month('2015-02-05', '02'));
     });
     it('should accept full dates ', function() {
-      assert.equal(true, Beardo.Date.full('2015-02-05', '2015-02-05'));
+      assert.equal(true, Conjuror.Date.full('2015-02-05', '2015-02-05'));
     });
     it('should reject full dates ', function() {
-      assert.equal(false, Beardo.Date.full('2015-02-05', '2015-02-06'));
+      assert.equal(false, Conjuror.Date.full('2015-02-05', '2015-02-06'));
     });
   });
 
@@ -80,13 +84,13 @@ describe('Beardo', function(){
     var data_month = [
       [ 'date','time','description','client','location','rate','payment_rate' ],
       [ moment().format('YYYY-MM-DD'),
-        '3', 'started tinkering', 'beardo', 'home', '0.00'],
+        '3', 'started tinkering', 'conjuror', 'home', '0.00'],
       [ moment().subtract(2, 'months').format('YYYY-MM-DD'),
-        '3', 'started tinkering', 'beardo', 'home', '0.00'],
+        '3', 'started tinkering', 'conjuror', 'home', '0.00'],
       [ moment().add(8, 'days').format('YYYY-MM-DD'),
-        '3', 'started tinkering', 'beardo', 'home', '0.00'],
+        '3', 'started tinkering', 'conjuror', 'home', '0.00'],
       [ moment().subtract(2, 'years').format('YYYY-MM-DD'),
-        '3', 'started tinkering', 'beardo', 'home', '0.00']
+        '3', 'started tinkering', 'conjuror', 'home', '0.00']
       ];
 
     var schema = {
@@ -118,22 +122,22 @@ describe('Beardo', function(){
     }
 
     it('should filter by month', function() {
-      var outputs = Beardo.magickData(data_month, schema, 'month');
+      var outputs = Conjuror.magickData(data_month, schema, 'month');
       assert.equal(6, outputs.totals.hours);
     });
 
     it('should filter by week', function() {
-      var outputs = Beardo.magickData(data_month, schema, 'week');
+      var outputs = Conjuror.magickData(data_month, schema, 'week');
       assert.equal(3, outputs.totals.hours);
     });
 
     it('should filter by month name', function() {
-      var outputs = Beardo.magickData(data_month, schema, moment().format('MMM'));
+      var outputs = Conjuror.magickData(data_month, schema, moment().format('MMM'));
       assert.equal(6, outputs.totals.hours);
     });
 
     it('should filter by a year', function() {
-      var outputs = Beardo.magickData(data_month, schema, moment().format('YYYY'));
+      var outputs = Conjuror.magickData(data_month, schema, moment().format('YYYY'));
       assert.equal(9, outputs.totals.hours);
     });
   });
@@ -150,7 +154,7 @@ describe('Beardo', function(){
 
     it('should return an error if there is no file');
     // , function(done){
-    //   Beardo.summonUser('blah', function(err){
+    //   Conjuror.summonUser('blah', function(err){
     //     assert.equal(err.exists, false);
     //     done();
     //   });
