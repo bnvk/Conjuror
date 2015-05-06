@@ -1,17 +1,17 @@
-![The Magical Beardo](images/bearded-wizard.png)
+![The Magical Conjuror](images/bearded-wizard.png)
 
-Beardo
+Conjuror
 ---
 
-Beardo, the magical time tracking wizard who knows how you spend all your time and dons an epic beard. Kind of like Santa Claus, sans the whole naughty or nice bit.
+Conjuror, the magical time tracking wizard who knows how you spend all your time and dons an epic beard. Kind of like Santa Claus, sans the whole naughty or nice bit.
 
 ## Data Format
 
-The data which Beardo consumes is simple CSV data that also implements [Data Protocols](http://dataprotocols.org) and was inspired by [this blog post](http://blog.okfn.org/2013/07/02/git-and-github-for-data/) from Rufus Pollock of [OKFN](http://okfn.org). Currently Beardo supports & makes bare minimum use of [JSON Table Schema](http://dataprotocols.org/json-table-schema/).
+The data which Conjuror consumes is simple CSV data that also implements [Data Protocols](http://dataprotocols.org) and was inspired by [this blog post](http://blog.okfn.org/2013/07/02/git-and-github-for-data/) from Rufus Pollock of [OKFN](http://okfn.org). Currently Conjuror supports & makes bare minimum use of [JSON Table Schema](http://dataprotocols.org/json-table-schema/).
 
 #### Getting Started
 
-In order to use Beardo to keep track of something like billable hours / freelance work, locate the following two files:
+In order to use Conjuror to keep track of something like billable hours / freelance work, locate the following two files:
 
 * `data/_template.csv`
 * `data/_template.json`
@@ -22,8 +22,8 @@ Once the Schema & CSV matches, you can start adding data items to the CSV such a
 
 ```
 date, time, description, client, location, rate
-2015-02-07, 2, improved importing of files, beardo, cafe, 0.00
-2015-02-08, 2, updated commands & documentation, beardo, home, 0.00
+2015-02-07, 2, improved importing of files, conjuror, cafe, 0.00
+2015-02-08, 2, updated commands & documentation, mailpile, home, 0.00
 ```
 
 You can manually add items to the CSV, or you can use the rough implemenation of the time tracker tool by running a separate script called
@@ -31,7 +31,7 @@ You can manually add items to the CSV, or you can use the rough implemenation of
 
 ## Commands
 
-To perform reports just type `node beardo.js` into your command line with one of the following flags
+To perform reports just type `node conjuror.js` into your command line with one of the following flags
 
 #### Flags
 
@@ -52,7 +52,7 @@ Run either of the follow two examples from terminal command line
 **Example (trim)**
 
 ```
-node beardo.js --input data/clients.json --trim client-name
+node conjuror.js --input data/clients.json --trim client-name
 ```
 
 This command should have printed data to your command line that matches your trim parameter.
@@ -60,7 +60,7 @@ This command should have printed data to your command line that matches your tri
 **Example (output & date)**
 
 ```
-node beardo.js -i data/clients.json -o "Feb Invoice" -t client-name --date=Feb
+node conjuror.js -i data/clients.json -o "Feb Invoice" -t client-name --date=Feb
 ```
 
 The above example should have outputted an HTML rendering of your the entries parsed from your data. The output will be located in `output/Feb Invoice.html`
@@ -81,12 +81,10 @@ node track.js -i path/to/your-file.csv
 
 The track tool will then open that file and create suggestions that make it easier to add items that match that of previous entries. This feature is rough and has not been tested should be somewhat useful.
 
-*Tracker tool will eventually be merged into a unified CLI once [Issue #17](https://github.com/bnvk/Beardo/issues/17) is completed*
+*Tracker tool will eventually be merged into a unified CLI once [Issue #17](https://github.com/bnvk/Conjuror/issues/17) is completed*
 
-### Okay, What's With the Weird Name?
+### Why The Magical Name & Terminology?
 
-Did you know beards could tell time? No truly, Beards are a magical wonder of nature. Much like the rings of old growth tree, each and every beard contains a unique record of the health and life lived by the beard grower. Was the grower properly nourished throughout the cold winter months? Do they have a health sex life? Do they drink too much alcohol? A good proper full beard knows all.
-
-Since I am one of those of those rare individuals who suffer from Beard envy, in that I cannot really grow a proper beard, I decided to make a prosthetic beard- or rather an experiment in open data and time tracking / invoicing software that keeps record of my work and activities.
+Well, this used to be called Beardo, which was a joke, but then I realized a big part of the name was because I really only wanted to use this icon of a magical bearded wizard. It's also largely inspired by the [@CyberWizardInstitute](https://github.com/CyberWizardInstitute).
 
 ![Made in Berlin](images/Made-in-Berlin.png)
