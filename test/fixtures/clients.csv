@@ -1,0 +1,2 @@
+slug, name, address, tax_identification, contact, contact_email
+client1,"Client The First","123 The Street, <br/>The City, <br/>The Place, 00001, <br/>Country","Tax #: 12345678","Jane Doe", jane@doe.cc

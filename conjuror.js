@@ -1,4 +1,6 @@
+var Promise = require('es6-promise').Promise;
 var cheerio = require("cheerio");
+var fs      = require("fs");
 var _       = require('underscore');
 var moment  = require('moment');
 var net     = require('net');
@@ -15,7 +17,7 @@ var args = argv.run();
 // File Manipulation
 var SaveFile = require('./lib/save_file');
 
-// Beardo
+// Conjuror
 var Conjuror = require('./lib/conjuror.prepareRecipe.js');
 
 // Load Conjuror.Date
@@ -36,10 +38,32 @@ Conjuror.Trim = function(parts) {
   }
 };
 
+Conjuror.getClient = function(client_file, trim, callback) {
+  // Takes as input a client.json file, the client slug to trim by,
+  // the callback function which acts on the client object.
+  Conjuror.readData(client_file, function(data) {
+    // TODO: We need *way* better error handling here.
+    if (data.data !== undefined && trim !== undefined) {
 
-Conjuror.getClient = function() {
+      data.data.splice(0,1);
+      clientData = data.data;
+      var foundClient = _.find(clientData, function(line, index){
+        if (line) {
 
+          var lineItem = Conjuror.murmurLineToSchema(line, data.schema);
+          return lineItem.slug.toString() === trim.toString();
+        } else {
+          return false;
+        }
+      });
+
+      return callback(Conjuror.murmurLineToSchema(foundClient, data.schema));
+    } else {
+      return callback(undefined);
+    }
+  });
 }
+    // .then(function(data) {
 
 Conjuror.summonUser = function(callback){
   // TODO: We should probably remove the depency on args here, and pass it in
@@ -129,6 +153,8 @@ Conjuror.magickData = function(data, schema, date) {
       }
     }
   });
+  outputs.totals.hours = outputs.totals.hours.toFixed(2);
+  outputs.totals.money = outputs.totals.money.toFixed(2);
   return outputs;
 }
 
@@ -139,14 +165,19 @@ Conjuror.castToHTML = function(outputs, user){
 
     // Get HTML Template
     var template = args.config.invoice_template || 'invoice';
-    console.log("Using template:", template);
     var template_path = './templates/' + template + '.html';
 
     Conjuror.readManuscript(template_path)
+
       .then(function(buffer) {
         console.log("Conjuror loaded template");
         var output_name = 'Invoice - ' + moment().format('D MMMM YYYY');
-        if (args.options.output) {
+
+        if (outputs.client) {
+          output_name = args.options.invoicenumber + ' - ' +
+            outputs.client.name + ' - ' +
+            moment().format('DD.MM.YYYY');
+        } else if (args.options.output) {
           output_name = args.options.output;
         }
 
@@ -154,6 +185,8 @@ Conjuror.castToHTML = function(outputs, user){
         var template_html = _.template(template_file);
 
         var template_data = {
+          client: outputs.client,
+          invoice_number: args.options.invoicenumber,
           generated_name: output_name,
           generated_date: moment().format('Do MMMM, YYYY'),
           hours_rows: outputs.html,
@@ -170,19 +203,18 @@ Conjuror.castToHTML = function(outputs, user){
         template_data.extra = args.options.extra || '';
 
         var output_html = template_html(template_data);
-
         // Save HTML file
         if (_.indexOf(args.options.format, 'html') > -1) {
-          var saveFile = new SaveFile(fs, 'output/' + output_name + '.html', output_html);
+          var saveFile = SaveFile(fs, 'output/' + output_name + '.html', output_html);
         }
 
         // Save PDF file
-        Beardo.castHTMLToPDF(output_html, output_name);
+        Conjuror.castHTMLToPDF(output_html, output_name);
       }, function(err) {
-        console.log("Failed to find template.")
+        console.log("Failed to find template.");
       });
   }
-}
+};
 
 Conjuror.castHTMLToPDF = function(output_html, output_name){
   if (_.indexOf(args.options.format, 'pdf') > -1) {
@@ -192,59 +224,56 @@ Conjuror.castHTMLToPDF = function(output_html, output_name){
       output: 'output/' + output_name + '.pdf'
     });
   }
-}
+};
 
 // Load Data & Parse
-Conjuror.Twirl = function(path, resource, callback) {
+
+Conjuror.Twirl = function(path, resource, client_path, callback) {
   var resource_file = path + '/' + resource.path;
 
   Conjuror.readManuscript(resource_file)
     .then(function(buffer) {
       var data = buffer.toString("utf8", 0, buffer.length);
-
-      // Totals (for tallying)
-
       // Loop Through Items
       csv.parse(data, function(err, data){
-        if (err){
-          console.log("Had a problem with the CSV File: ", err);
-        }
+        Conjuror.getClient(client_path, args.options.trim, function(client) {
 
-        var outputs = Conjuror.magickData(data, resource.schema, args.options.date);
-
-        // Overwrite outputs.money when we have a fixed price.
-        if (args.options.fixedprice) {
-          outputs.totals.money = +args.options.fixedprice
-        }
-
-        if (args.options.trim !== undefined) {
-          outputs.clients = Conjuror.getClient(args.options.trim);
-        }
-
-        // FIXME: OUTPUT STUFF (Refactor out)
-        if (args.options.format) {
-          console.log('-----------------------------------------------------------------------------');
-          console.log('Output Formats: ' + args.options.format.join(','));
-        }
-
-        console.log('-----------------------------------------------------------------------------');
-        console.log(outputs.cli);
-        console.log('-----------------------------------------------------------------------------');
-        console.log('Total hours worked: ' + outputs.totals.hours);
-        console.log('Total monies earned: ' + (args.options.currency || '$') + outputs.totals.money);
-
-        Conjuror.summonUser(function(user_data) {
-          if (user_data && user_data.error === undefined){
-            Conjuror.castToHTML(outputs, user_data);
-          } else {
-            Conjuror.castToHTML(outputs, undefined);
+          if (err){
+            console.log("Had a problem with the CSV File: ", err);
           }
-          // return callback for test purposes, and for future func?
-          if (callback) return callback();
+
+          var outputs = Conjuror.magickData(data, resource.schema, args.options.date);
+          outputs.client = client;
+
+          // Overwrite outputs.money when we have a fixed price.
+          if (args.options.fixedprice) {
+            outputs.totals.money = +args.options.fixedprice
+          }
+
+          if (args.options.format) {
+            console.log('-----------------------------------------------------------------------------');
+            console.log('Output Formats: ' + args.options.format.join(','));
+          }
+
+          console.log('-----------------------------------------------------------------------------');
+          console.log(outputs.cli);
+          console.log('-----------------------------------------------------------------------------');
+          console.log('Total hours worked: ' + outputs.totals.hours);
+          console.log('Total monies earned: ' + (args.options.currency || '$') + outputs.totals.money);
+
+          Conjuror.summonUser(function(user_data) {
+            if (user_data && user_data.error === undefined){
+              Conjuror.castToHTML(outputs, user_data);
+            } else {
+              Conjuror.castToHTML(outputs, undefined);
+            }
+            // return callback for test purposes, and for future func?
+            if (callback) return callback();
+          })
         })
       });
-    }, function(error) {
-      console.log('awwww no data');
+    }).catch(function(error) {
+      console.log("Error while Twirling: ", error);
       if (callback) return callback(Error);
     });
 };
@@ -252,9 +281,7 @@ Conjuror.Twirl = function(path, resource, callback) {
 
 // Load Schema
 Conjuror.Grow = function(schema_file) {
-
-  var path = require('path').dirname(schema_file);
-  console.log(path);
+  var dataPath = require('path').dirname(schema_file);
 
   Conjuror.readManuscript(schema_file)
     .then(function(buffer) {
@@ -267,12 +294,11 @@ Conjuror.Grow = function(schema_file) {
       _.each(schema[0].resources, function(resource, key) {
 
         console.log('Twirl resource: ' + resource.path);
-
         // Open Data
-        Conjuror.Twirl(path, resource);
+        Conjuror.Twirl(dataPath, resource, schema[0].clients);
 
       });
-    }, function(error) {
+    }).catch(function(error) {
       console.log(error);
     });
 };
@@ -286,7 +312,7 @@ if (args.options.input !== undefined) {
     Conjuror.Grow(args.options.input);
   });
 } else {
-  console.log('404 No beard found \nAre you sure you specified an --input -i value');
+  console.log('404 No spell found \nAre you sure you specified an --input -i value');
 }
 
 module.exports = Conjuror;

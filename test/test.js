@@ -4,6 +4,15 @@ var moment = require('moment');
 
 describe('Conjuror', function(){
 
+  describe('getClient', function(){
+    it('should get a client file', function(done){
+      Conjuror.getClient('test/fixtures/clients.json', 'client1', function(client) {
+        assert.equal(client.slug, 'client1');
+        done();
+      })
+    })
+  });
+
   describe('twirl', function(){
     var config = {
         'path':'test_twirl.csv',
@@ -36,14 +45,15 @@ describe('Conjuror', function(){
         }
     };
     it('should twirl a resource', function(done){
-      Conjuror.Twirl('test', config, function(err){
+      Conjuror.Twirl('test/fixtures', config, {}, function(err){
+        // This test needs to be elaborated on.
         assert.equal(err, undefined);
         done();
       });
     });
 
     it('should return an error if there is no CSV data', function(done){
-      Conjuror.Twirl('blah', config, function(err){
+      Conjuror.Twirl('blah', config, {}, function(err){
         assert.notEqual(err, undefined);
         done();
       });

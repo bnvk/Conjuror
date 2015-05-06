@@ -1,6 +1,6 @@
 bower_components/
 node_modules/
 data/
-.beardo/
+.conjuror/
 output/
 .DS_Store
