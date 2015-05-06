@@ -153,6 +153,8 @@ Conjuror.magickData = function(data, schema, date) {
       }
     }
   });
+  outputs.totals.hours = outputs.totals.hours.toFixed(2);
+  outputs.totals.money = outputs.totals.money.toFixed(2);
   return outputs;
 }
 
@@ -248,33 +250,9 @@ Conjuror.Twirl = function(path, resource, client_path, callback) {
             outputs.totals.money = +args.options.fixedprice
           }
 
-        // if (args.options.trim !== undefined) {
-        //   outputs.clients = Conjuror.getClient(args.options.trim);
-        // }
-
-          // Overwrite outputs.money when we have a fixed price.
-          if (args.options.fixedprice) {
-            outputs.totals.money = +args.options.fixedprice
-          }
-
-// <<<<<<< HEAD:Conjuror.js
-          // FIXME: OUTPUT STUFF (Refactor out)
           if (args.options.format) {
             console.log('-----------------------------------------------------------------------------');
             console.log('Output Formats: ' + args.options.format.join(','));
-// =======
-//         console.log('-----------------------------------------------------------------------------');
-//         console.log(outputs.cli);
-//         console.log('-----------------------------------------------------------------------------');
-//         console.log('Total hours worked: ' + outputs.totals.hours);
-//         console.log('Total monies earned: ' + (args.options.currency || '$') + outputs.totals.money);
-
-//         Conjuror.summonUser(function(user_data) {
-//           if (user_data && user_data.error === undefined){
-//             Conjuror.castToHTML(outputs, user_data);
-//           } else {
-//             Conjuror.castToHTML(outputs, undefined);
-// >>>>>>> 0b2d447eb6e52eb796710d8759f2e1c20ead184d:conjuror.js
           }
 
           console.log('-----------------------------------------------------------------------------');
