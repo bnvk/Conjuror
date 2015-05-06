@@ -1,5 +1,6 @@
 var Promise = require('es6-promise').Promise;
 var cheerio = require("cheerio");
+var fs      = require("fs");
 var _       = require('underscore');
 var moment  = require('moment');
 var net     = require('net');
@@ -43,16 +44,19 @@ Conjuror.getClient = function(client_file, trim, callback) {
   Conjuror.readData(client_file, function(data) {
     // TODO: We need *way* better error handling here.
     if (data.data !== undefined && trim !== undefined) {
+
       data.data.splice(0,1);
       clientData = data.data;
       var foundClient = _.find(clientData, function(line, index){
         if (line) {
+
           var lineItem = Conjuror.murmurLineToSchema(line, data.schema);
-          return lineItem.slug === trim;
+          return lineItem.slug.toString() === trim.toString();
         } else {
           return false;
         }
       });
+
       return callback(Conjuror.murmurLineToSchema(foundClient, data.schema));
     } else {
       return callback(undefined);
@@ -168,8 +172,9 @@ Conjuror.castToHTML = function(outputs, user){
         var output_name = 'Invoice - ' + moment().format('D MMMM YYYY');
 
         if (outputs.client) {
-          output_name = outputs.client.name + ' - ' +
-            moment().format('DD/MM/YYYY');
+          output_name = args.options.invoicenumber + ' - ' +
+            outputs.client.name + ' - ' +
+            moment().format('DD.MM.YYYY');
         } else if (args.options.output) {
           output_name = args.options.output;
         }
@@ -179,6 +184,7 @@ Conjuror.castToHTML = function(outputs, user){
 
         var template_data = {
           client: outputs.client,
+          invoice_number: args.options.invoicenumber,
           generated_name: output_name,
           generated_date: moment().format('Do MMMM, YYYY'),
           hours_rows: outputs.html,
@@ -195,7 +201,6 @@ Conjuror.castToHTML = function(outputs, user){
         template_data.extra = args.options.extra || '';
 
         var output_html = template_html(template_data);
-
         // Save HTML file
         if (_.indexOf(args.options.format, 'html') > -1) {
           var saveFile = SaveFile(fs, 'output/' + output_name + '.html', output_html);
