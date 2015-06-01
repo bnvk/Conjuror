@@ -305,8 +305,8 @@ Conjuror.Twirl = function(path, resource, client_path, callback) {
 
           // This Section is needed if there are "totals"
           // Overwrite outputs.money when we have a fixed price.
-          if (args.options.fixedprice) {
-            outputs.totals.money = +args.options.fixedprice
+          if (args.options.price) {
+            outputs.totals.money = +args.options.price
           }
 
           if (args.options.format) {
