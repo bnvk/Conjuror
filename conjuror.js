@@ -76,11 +76,13 @@ Conjuror.summonUser = function(callback){
 };
 
 Conjuror.magickData = function(data, schema, date) {
+
   var outputs = {
     totals: {
       hours: 0,
       money: 0.00,
     },
+    csv: _.pluck(schema.fields, 'name').join(','),
     cli: '',
     html: ''
   };
@@ -132,6 +134,7 @@ Conjuror.magickData = function(data, schema, date) {
     if (_.indexOf(args.options.format, 'html') > -1 || _.indexOf(args.options.format, 'pdf') > -1) {
       outputs.html += '<tr>\n';
       outputs.html += '   <td class="width-50">' + item.date + '</td>\n';
+      outputs.html += '   <td class="width-50">' + item.client + '</td>\n';
       outputs.html += '   <td class="text-right">' + item.time + '</td>\n';
       outputs.html += '   <td class="text-left"> hrs</td>\n';
       outputs.html += '   <td>' + item.description + '</td>\n';
@@ -139,27 +142,54 @@ Conjuror.magickData = function(data, schema, date) {
     }
   };
 
-  _.each(data, function(line, index){
+  _.each(data, function(line, index) {
 
     if (index !== 0){ // skip the first line
       var parts = line;
+
       // Filter Date & Trim
       var check_date = Conjuror.Date[date_filter](parts[0], date);
       var check_trim = Conjuror.Trim(parts);
 
+      // Does Item Meet Filter (date, trim)
       if (_.indexOf([check_date, check_trim], false) === -1) {
+
+        // Build CSV format (FIXME: nasty code organization going on here)
+        if (_.indexOf(args.options.format, 'csv') > -1) {
+          outputs.csv += '\n' + line.join(',');
+        }
+
         var item_output = Conjuror.murmurLineToSchema(line, schema);
         increment_output(item_output);
       }
     }
   });
+
+  // Outputs
   outputs.totals.hours = outputs.totals.hours.toFixed(2);
   outputs.totals.money = outputs.totals.money.toFixed(2);
   return outputs;
 }
 
+
+Conjuror.castToCSV = function(outputs) {
+
+  if (_.indexOf(args.options.format, 'csv') > -1) {
+
+    // File Name
+    var output_name = 'Conjuror Output - ' + moment().format('D MMMM YYYY');
+    if (args.options.output) {
+      output_name = args.options.output;
+    }
+
+    // Save CSV
+    var saveFile = SaveFile(fs, 'output/' + output_name + '.csv', outputs.csv);
+  }
+}
+
+
+// Output HTML
 Conjuror.castToHTML = function(outputs, user){
-  // Output HTML
 
   if (_.indexOf(args.options.format, 'html') > -1 || _.indexOf(args.options.format, 'pdf') > -1) {
 
@@ -226,16 +256,20 @@ Conjuror.castHTMLToPDF = function(output_html, output_name){
   }
 };
 
-// Load Data & Parse
 
+// Load Data & Parse
 Conjuror.Twirl = function(path, resource, client_path, callback) {
   var resource_file = path + '/' + resource.path;
 
   Conjuror.readManuscript(resource_file)
     .then(function(buffer) {
+
       var data = buffer.toString("utf8", 0, buffer.length);
+
       // Loop Through Items
-      csv.parse(data, function(err, data){
+      csv.parse(data, function(err, data) {
+
+        // Load client (pertains to invoicing)
         Conjuror.getClient(client_path, args.options.trim, function(client) {
 
           if (err){
@@ -245,6 +279,10 @@ Conjuror.Twirl = function(path, resource, client_path, callback) {
           var outputs = Conjuror.magickData(data, resource.schema, args.options.date);
           outputs.client = client;
 
+          // Output CSV - rough implementation https://github.com/bnvk/Conjuror/issues/36
+          Conjuror.castToCSV(outputs);
+
+          // This Section is needed if there are "totals"
           // Overwrite outputs.money when we have a fixed price.
           if (args.options.fixedprice) {
             outputs.totals.money = +args.options.fixedprice
@@ -261,6 +299,7 @@ Conjuror.Twirl = function(path, resource, client_path, callback) {
           console.log('Total hours worked: ' + outputs.totals.hours);
           console.log('Total monies earned: ' + (args.options.currency || '$') + outputs.totals.money);
 
+          // Get User
           Conjuror.summonUser(function(user_data) {
             if (user_data && user_data.error === undefined){
               Conjuror.castToHTML(outputs, user_data);
