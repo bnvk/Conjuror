@@ -23,6 +23,25 @@ var Conjuror = require('./lib/conjuror.prepareRecipe.js');
 // Load Conjuror.Date
 Conjuror.Date = conjurorDate;
 
+
+Conjuror.Search = function(parts) {
+
+  if (args.options.search !== undefined) {
+    // FIXME: ugly duplication of trim https://github.com/bnvk/Conjuror/issues/35
+    var part = parts[2].toLowerCase();
+    var search = args.options.search.toLowerCase();
+    if (part.indexOf(search) > -1) {
+      console.log('description: ' + part + ' | contains: ' + search);
+      return true;
+    } else {
+      return false;
+    }
+  } else {
+    return true;
+  }
+};
+
+
 Conjuror.Trim = function(parts) {
   if (args.options.trim !== undefined) {
     var part = parts[3].trim();
@@ -37,6 +56,7 @@ Conjuror.Trim = function(parts) {
     return true;
   }
 };
+
 
 Conjuror.getClient = function(client_file, trim, callback) {
   // Takes as input a client.json file, the client slug to trim by,
@@ -63,7 +83,7 @@ Conjuror.getClient = function(client_file, trim, callback) {
     }
   });
 }
-    // .then(function(data) {
+
 
 Conjuror.summonUser = function(callback){
   // TODO: We should probably remove the depency on args here, and pass it in
@@ -148,11 +168,12 @@ Conjuror.magickData = function(data, schema, date) {
       var parts = line;
 
       // Filter Date & Trim
-      var check_date = Conjuror.Date[date_filter](parts[0], date);
-      var check_trim = Conjuror.Trim(parts);
+      var check_date    = Conjuror.Date[date_filter](parts[0], date);
+      var check_trim    = Conjuror.Trim(parts);
+      var check_search  = Conjuror.Search(parts);
 
       // Does Item Meet Filter (date, trim)
-      if (_.indexOf([check_date, check_trim], false) === -1) {
+      if (_.indexOf([check_date, check_trim, check_search], false) === -1) {
 
         // Build CSV format (FIXME: nasty code organization going on here)
         if (_.indexOf(args.options.format, 'csv') > -1) {

@@ -42,6 +42,7 @@ Flag | Short Flag | Behavior
 --format | -f | allows you to choose different output formats (cli, csv, html, pdf)
 --output | -o | specify `Name of File.html` being output
 --date | -d | filters by date `'February, Feb, 01` allows case insensitive. Also allows filtering by `week` and `month` which filters by the current week and current month respectively.
+--search | -s | searches for a string like `magic` contained within a longer string `I love doing magic tricks`
 --trim | -t | filters by an item like 'client' (currently hardcoded value)
 --fixedprice | -p | Override the calculated price with a fixed price
 --currency | -c | what currency the thing is in
