@@ -60,6 +60,16 @@ describe('Conjuror', function(){
     });
   });
 
+  describe('search', function(){
+    var test_phrase = "the wizard does magic right?";
+    it('should find search "magic" in phrase', function() {
+      assert.equal(true, Conjuror.Search(["","",test_phrase,""], 'magic'));
+    });
+    it('should not find search "dogs" in phrase', function() {
+      assert.equal(false, Conjuror.Search(["","",test_phrase,""], 'dogs'));
+    });
+  });
+
   describe('date', function(){
     it('should ignore March dates when looking for "Feb"', function() {
       assert.equal(false, Conjuror.Date.month('2015-03-05', 'Feb'));

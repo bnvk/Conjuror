@@ -24,14 +24,13 @@ var Conjuror = require('./lib/conjuror.prepareRecipe.js');
 Conjuror.Date = conjurorDate;
 
 
-Conjuror.Search = function(parts) {
-
-  if (args.options.search !== undefined) {
+Conjuror.Search = function(parts, term) {
+  if (term !== undefined) {
     // FIXME: ugly duplication of trim https://github.com/bnvk/Conjuror/issues/35
     var part = parts[2].toLowerCase();
-    var search = args.options.search.toLowerCase();
+    var search = term.toLowerCase();
     if (part.indexOf(search) > -1) {
-      console.log('description: ' + part + ' | contains: ' + search);
+      //console.log('description: ' + part + ' | contains: ' + search);
       return true;
     } else {
       return false;
@@ -170,7 +169,7 @@ Conjuror.magickData = function(data, schema, date) {
       // Filter Date & Trim
       var check_date    = Conjuror.Date[date_filter](parts[0], date);
       var check_trim    = Conjuror.Trim(parts);
-      var check_search  = Conjuror.Search(parts);
+      var check_search  = Conjuror.Search(parts, args.options.search);
 
       // Does Item Meet Filter (date, trim)
       if (_.indexOf([check_date, check_trim, check_search], false) === -1) {
