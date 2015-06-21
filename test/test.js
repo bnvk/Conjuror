@@ -90,18 +90,13 @@ describe('Conjuror', function(){
 
   describe('magickData', function() {
 
-    // populate some data for this month
-    var data_month = [
-      [ 'date','time','description','client','location','rate','payment_rate' ],
-      [ moment().format('YYYY-MM-DD'),
-        '3', 'started tinkering', 'conjuror', 'home', '0.00'],
-      [ moment().subtract(2, 'months').format('YYYY-MM-DD'),
-        '3', 'started tinkering', 'conjuror', 'home', '0.00'],
-      [ moment().add(8, 'days').format('YYYY-MM-DD'),
-        '3', 'started tinkering', 'conjuror', 'home', '0.00'],
-      [ moment().subtract(2, 'years').format('YYYY-MM-DD'),
-        '3', 'started tinkering', 'conjuror', 'home', '0.00']
-      ];
+    // Populate "invoice" data for this month
+    var data_month = [];
+    data_month.push(['date','time','description','client','location','rate','payment_rate']);
+    data_month.push([moment().format('YYYY-MM-DD'), '3', 'started tinkering', 'conjuror', 'home', '0.00']);
+    data_month.push([moment().subtract(2, 'months').format('YYYY-MM-DD'), '3', 'started tinkering', 'conjuror', 'home', '0.00']);
+    data_month.push([moment().add(8, 'days').format('YYYY-MM-DD'), '3', 'started tinkering', 'conjuror', 'home', '0.00']);
+    data_month.push([moment().subtract(2, 'years').format('YYYY-MM-DD'), '3', 'started tinkering', 'conjuror', 'home', '0.00']);
 
     var schema = {
         "fields": [{
@@ -143,7 +138,7 @@ describe('Conjuror', function(){
 
     it('should filter by month name', function() {
       var outputs = Conjuror.magickData(data_month, schema, moment().format('MMM'));
-      assert.equal(6, outputs.totals.hours);
+      assert.equal(9, outputs.totals.hours);
     });
 
     it('should filter by a year', function() {
