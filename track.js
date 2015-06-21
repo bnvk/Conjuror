@@ -1,5 +1,5 @@
-/** Beard - Track
- * A simple lil time tracking CLI for Beardo
+/** Conjuror - Track
+ * A simple lil time tracking CLI for Conjuror
  * run by typing `node track.js` in your console
  */
 
@@ -149,7 +149,7 @@ function runApp() {
 }
 
 
-console.log('Ahoy pilgrim. Beardo is ready to track');
+console.log('Ahoy pilgrim. Conjuror is ready to track');
 
 
 // Start It Up
@@ -159,7 +159,7 @@ var args = argv.run();
 if (args.options.input !== undefined) {
   fs.readFile(args.options.input, openFileFinished);
 } else {
-  console.log('404 No beard found \nAre you sure you specified an --input -i value');
+  console.log('Oops, no data. Are you sure you specified an --input -i value?');
 }
 
 
