@@ -11,12 +11,13 @@ The data which Conjuror consumes is simple CSV data that also implements [Data P
 
 #### Getting Started
 
-In order to use Conjuror to keep track of something like billable hours / freelance work, locate the following two files:
+1. First thing to do is create a config file by running `node setup.js` and walk through the steps
+2. In order to use Conjuror to keep track of something like billable hours / freelance work, locate the following two files:
 
 * `data/_template.csv`
 * `data/_template.json`
 
-You're going to want to make a copy of both files and rename them something like `clients.csv` or whatever suits your needs. You can add extra values to the Schema & CSV columns as you see it.
+Make a copy of both files and rename them something like `clients.csv` or `receipts.csv` whatever suits your needs. You can add extra values to the Schema & CSV columns as you see it.
 
 Once the Schema & CSV matches, you can start adding data items to the CSV such as:
 
@@ -26,8 +27,7 @@ date, time, description, client, location, rate
 2015-02-08, 2, updated commands & documentation, mailpile, home, 0.00
 ```
 
-You can manually add items to the CSV, or you can use the rough implemenation of the time tracker tool by running a separate script called
-`track.js` read more about this below.
+You can manually add items to the CSV, or you can use the rough implemenation of the time tracker tool by running a separate script called `track.js` read more about this below.
 
 ## Commands
 
@@ -40,7 +40,7 @@ Flag | Short Flag | Behavior
 --help | -h | shows list of commands
 --input | -i | selects `data.json` schema file to open up
 --format | -f | allows you to choose different output formats (cli, csv, html, pdf)
---output | -o | specify `Name of File.html` being output
+--output | -o | specify `Name of File` to be output
 --date | -d | filters by date `'February, Feb, 01` allows case insensitive. Also allows filtering by `week` and `month` which filters by the current week and current month respectively.
 --search | -s | searches for a string like `magic` contained within a longer string `I love doing magic tricks`
 --trim | -t | filters by an item like 'client' (currently hardcoded value)
