@@ -8,6 +8,7 @@ var path    = require('path');
 var repl    = require('repl');
 var csv     = require('csv');
 var wkhtmltopdf   = require('wkhtmltopdf');
+var config        = require('./lib/conjuror.config.js')
 var conjurorDate  = require('./lib/conjuror.date.js');
 var argv          = require('./lib/conjuror.options.js');
 
@@ -364,7 +365,7 @@ Conjuror.Grow = function(schema_file) {
 
 // Start It Up
 if (args.options.input !== undefined) {
-  Conjuror.getIngredients('.conjuror/config.json', function(config){
+  Conjuror.getIngredients(config.get_file_path(), function(config) {
     // don't really care of the status of config for the moment.
     // let's just supply sensible defaults.
     args.config = config;
