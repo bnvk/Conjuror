@@ -9,7 +9,6 @@ var repl    = require('repl');
 var csv     = require('csv');
 var wkhtmltopdf   = require('wkhtmltopdf');
 var config        = require('./lib/conjuror.config.js')
-var conjurorDate  = require('./lib/conjuror.date.js');
 var argv          = require('./lib/conjuror.options.js');
 
 // Run the imported options.
@@ -21,41 +20,10 @@ var SaveFile = require('./lib/save_file');
 // Conjuror
 var Conjuror = require('./lib/conjuror.prepareRecipe.js');
 
-// Load Conjuror.Date
-Conjuror.Date = conjurorDate;
-
-
-Conjuror.Search = function(parts, term) {
-  if (term !== undefined) {
-    // FIXME: ugly duplication of trim https://github.com/bnvk/Conjuror/issues/35
-    var part = parts[2].toLowerCase();
-    var search = term.toLowerCase();
-    if (part.indexOf(search) > -1) {
-      //console.log('description: ' + part + ' | contains: ' + search);
-      return true;
-    } else {
-      return false;
-    }
-  } else {
-    return true;
-  }
-};
-
-
-Conjuror.Trim = function(parts) {
-  if (args.options.trim !== undefined) {
-    var part = parts[3].trim();
-
-    if (_.indexOf(args.options.trim, part) > -1) {
-      //console.log('client: ' + part + ' matches: ' + args.options.trim);
-      return true;
-    } else {
-      return false;
-    }
-  } else {
-    return true;
-  }
-};
+// Load Conjuror Modules
+Conjuror.Date = require('./lib/conjuror.date.js');
+Conjuror.Trim = require('./lib/conjuror.trim.js');
+Conjuror.Search = require('./lib/conjuror.search.js');
 
 
 Conjuror.getClient = function(client_file, trim, callback) {
@@ -169,7 +137,7 @@ Conjuror.magickData = function(data, schema, date) {
 
       // Filter Date & Trim
       var check_date    = Conjuror.Date[date_filter](parts[0], date);
-      var check_trim    = Conjuror.Trim(parts);
+      var check_trim    = Conjuror.Trim(args.options.trim, parts);
       var check_search  = Conjuror.Search(parts, args.options.search);
 
       // Does Item Meet Filter (date, trim)
