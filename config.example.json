@@ -1,0 +1,12 @@
+{
+  "name": "Conjuror API",
+  "authors": ["Brennan Novak <hi@brennannovak.com>"],
+  "paths": {
+    "data": "/path/to/all/your/datas/"
+  },
+  "prefix": "data-",
+  "datasets": [
+    "countries",
+    "your-data-package"
+  ]
+}

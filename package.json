@@ -1,0 +1,41 @@
+{
+  "name": "conjuror-api",
+  "version": "0.0.0",
+  "description": "A server that exposes Conjuror queries over a REST API",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bnvk/Conjuror-API.git"
+  },
+  "keywords": [
+    "mailpile",
+    "email",
+    "email",
+    "client"
+  ],
+  "author": "Brennan Novak",
+  "license": "AGPLv3",
+  "bugs": {
+    "url": "https://github.com/bnvk/Conjuror-API/issues"
+  },
+  "homepage": "https://github.com/bnvk/Conjuror-API",
+  "dependencies": {
+    "argv": "0.0.2",
+    "csv": "*",
+    "datapackage-query": "^0.1.0",
+    "es6-promise": "^2.0.1",
+    "fs": "*",
+    "good": "^5.1.2",
+    "good-console": "^4.1.0",
+    "hapi": "^8.4.0",
+    "hapi-json-view": "^2.1.0",
+    "moment": "^2.9.0",
+    "nunjucks": "^1.2.0",
+    "nunjucks-hapi": "^1.1.0",
+    "underscore": "*"
+  },
+  "devDependencies": {}
+}
