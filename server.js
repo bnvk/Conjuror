@@ -30,13 +30,32 @@ server.route({
   path: '/{dataset*}',
   handler: function(request, reply) {
 
-    // Validate is allowed
-    if (_.indexOf(config.datasets, request.params.dataset) > -1) {
+    // If no param, show ToC
+    if (!request.params.dataset) {
+
+      var package_path = config.paths.data + config.prefix + config.index;
+      var data_path = Path.dirname(package_path + '/datapackage.json');
+      console.log('Open: ' + package_path + '/datapackage.json');
+
+      Query.Grow(package_path + '/datapackage.json', function(schema) {
+
+        // Open CSV Data
+        Query.Twirl(data_path, schema.resources[0], function(csv_to_json_data) {
+
+          var response = _.omit(schema, 'resources');
+          response['status'] = 'success';
+          response['result'] = csv_to_json_data;
+
+          // Render
+          reply(response);
+         });
+      });
+    }
+    else if (_.indexOf(config.datasets, request.params.dataset) > -1) {
 
       var package_path = config.paths.data + config.prefix + request.params.dataset;
       var data_path = Path.dirname(package_path + '/datapackage.json');
-
-      console.log('Open datapackage.json in: ' + package_path);
+      console.log('Open: ' + package_path + '/datapackage.json');
 
       Query.Grow(package_path + '/datapackage.json', function(schema) {
       
@@ -50,8 +69,8 @@ server.route({
             response['status'] = 'success';
             response['result'] = csv_to_json_data;
 
+            // Render
             reply(response);
-
            });
       
         });
@@ -61,10 +80,9 @@ server.route({
       // Show Error
       reply({
         status: 'error',
-        name: 'Oops no datasets called [' + request.params.dataset + ']'
+        name: 'Shucks there is no dataset called [' + request.params.dataset + ']'
       });
     }
-
   }
 });
 
