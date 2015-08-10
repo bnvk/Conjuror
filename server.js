@@ -8,7 +8,7 @@ var Query = require('datapackage-query');
 
 // Create Server
 var server = new Hapi.Server();
-server.connection({ port: 8888 });
+server.connection({ address: '127.0.0.1', port: 8888 });
 
 server.views({
   engines: {

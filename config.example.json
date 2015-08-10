@@ -1,12 +1,13 @@
 {
   "name": "Conjuror API",
-  "authors": ["Brennan Novak <hi@brennannovak.com>"],
+  "authors": ["Your Name <you@example.com>"],
   "paths": {
     "data": "/path/to/all/your/datas/"
   },
   "prefix": "data-",
+  "index": "toc",
   "datasets": [
-    "countries",
-    "your-data-package"
+    "your-package",
+    "another-package"
   ]
 }
