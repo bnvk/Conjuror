@@ -40,7 +40,7 @@ server.route({
       Query.Grow(package_path + '/datapackage.json', function(schema) {
 
         // Open CSV Data
-        Query.Twirl(data_path, schema.resources[0], function(csv_to_json_data) {
+        Query.Twirl(data_path, schema.resources[0], request.url.query, function(csv_to_json_data) {
 
           var response = _.omit(schema, 'resources');
           response['status'] = 'success';
@@ -58,13 +58,13 @@ server.route({
       console.log('Open: ' + package_path + '/datapackage.json');
 
       Query.Grow(package_path + '/datapackage.json', function(schema) {
-      
+
         // If Schema Contains Multiple
         _.each(schema.resources, function(resource, key) {
-      
+
           // Open CSV Data
-           Query.Twirl(data_path, resource, function(csv_to_json_data) {
-      
+           Query.Twirl(data_path, resource, request.url.query, function(csv_to_json_data) {
+
             var response = _.omit(schema, 'resources');
             response['status'] = 'success';
             response['result'] = csv_to_json_data;
@@ -72,7 +72,7 @@ server.route({
             // Render
             reply(response);
            });
-      
+
         });
 
       });
@@ -106,4 +106,3 @@ server.register({
     server.log('info', 'Server running at: ' + server.info.uri);
   });
 });
-
