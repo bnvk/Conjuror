@@ -8,14 +8,21 @@ var Query = require('datapackage-query');
 
 // Create Server
 var server = new Hapi.Server();
-server.connection({ address: '127.0.0.1', port: 8888 });
+server.connection({
+  address: '127.0.0.1',
+  port: 8888,
+  routes: {
+    cors: true,
+    jsonp: 'callback'
+  }
+});
 
 server.views({
   engines: {
     json: {
       module: HapiJsonView.create(),
       compileMode: 'async',
-      contentType: 'application/json'
+      contentType: 'application/json',
     }
   }
 })
