@@ -18,7 +18,15 @@ argv.option({
   short: 'i',
   type: 'string',
   description: 'Defines a CSV file for you to open',
-  example: "'track.js --input=value' or 'track.js -s data/work.csv"
+  example: "'track.js --input=value' or 'track.js -i data/work.csv"
+});
+
+argv.option({
+  name: 'timer',
+  short: 't',
+  type: 'boolean',
+  description: 'Times instead of direct implementation',
+  example: "'track.js --timer -i data/work.csv' or track.js -t -i data/work/csv"
 });
 
 
