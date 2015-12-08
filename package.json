@@ -1,11 +1,11 @@
 {
   "name": "conjuror",
   "description": "A magical CSV data parsing and outputing wizard or witch",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "repository": {
     "url": "https://github.com/bnvk/Conjuror"
   },
-  "main": "./lib/",
+  "main": "./conjuror",
   "keywords": [
     "time tracking",
     "time management",
@@ -13,7 +13,8 @@
     "pdf"
   ],
   "bin": {
-    "conjuror": "./bin/uppercaseme"
+    "conjuror": "./bin/conjuror",
+    "ctrack": "./bin/ctrack"
   },
   "author": "Brennan Novak <hi@bnvk.me>",
   "contributors": [
@@ -23,6 +24,7 @@
     "argv": "0.0.2",
     "bootstrap": "^3.3.2",
     "cheerio": "*",
+    "csv": "^0.4.1",
     "es6-promise": "^2.0.1",
     "fs": "*",
     "inquirer": "*",
@@ -34,7 +36,7 @@
     "node": "*"
   },
   "devDependencies": {
-    "csv": "^0.4.1"
+    "mocha":"^2.2.5"
   },
   "bugs": {
     "url": "https://github.com/bnvk/Conjuror/issues"
