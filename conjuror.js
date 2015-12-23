@@ -88,7 +88,10 @@ Conjuror.magickData = function(data, schema, date) {
     var is_month            = /month/;
     var is_today            = /today/;
 
-    if (is_week.exec(date)) {
+    if (date.indexOf(':to:') > -1) {
+      date_filter = 'range';
+    }
+    else if (is_week.exec(date)) {
       date_filter = 'this_week';
     } else if (is_today.exec(date)) {
       date_filter = 'today';
