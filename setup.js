@@ -1,11 +1,12 @@
 /** Conjuror - Setup
- * sets up an instance of Conjuror on a local computer via CLI 
+ * sets up an instance of Conjuror on a local computer via CLI
  */
 
-"use strict";
-var fs        = require("fs");
-var _         = require('underscore');
-var inquirer  = require("inquirer");
+"use strict"
+var fs        = require("fs")
+var _         = require('underscore')
+var inquirer  = require("inquirer")
+var mkdirp = require('mkdirp')
 var config = require('./lib/conjuror.config.js')
 
 
@@ -41,8 +42,7 @@ var questions = [{
     message: "Where on the world wide web do you call home?",
     default: 'https://magic-lab.org'
   }
-];
-
+]
 
 // Run Setup
 function runSetup() {
@@ -53,23 +53,24 @@ function runSetup() {
     var config_data = {
       'invoice_template': 'invoice',
       'user': answers
-    };
+    }
 
     // Save Config
     fs.appendFile(config.get_file_path(), JSON.stringify(config_data), function (err) {
-      if (err) throw err;
-      console.log('Created config file');
-      console.log(config_data);
-    });
-  });
+      if (err) throw err
+      console.log('Created config file')
+      console.log(config_data)
+    })
+  })
 }
-
 
 // Check if config exists
 fs.exists(config.get_file_path(), function(exists) {
   if (exists) {
     console.log('Shazzam there is already a config file');
   } else {
-    runSetup();  
+    mkdirp(config.get_path(), function (err) {
+      runSetup()
+    })
   }
-});
+})

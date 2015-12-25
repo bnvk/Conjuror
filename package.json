@@ -28,6 +28,7 @@
     "es6-promise": "^2.0.1",
     "fs": "*",
     "inquirer": "*",
+    "mkdir": "0.0.2",
     "moment": "^2.9.0",
     "underscore": "*",
     "wkhtmltopdf": "^0.1.5"
@@ -36,7 +37,7 @@
     "node": "*"
   },
   "devDependencies": {
-    "mocha":"^2.2.5"
+    "mocha": "^2.2.5"
   },
   "bugs": {
     "url": "https://github.com/bnvk/Conjuror/issues"
