@@ -3,4 +3,5 @@ node_modules/
 data/
 .conjuror/
 output/
+templates/
 .DS_Store

@@ -41,7 +41,7 @@ Flag | Short Flag | Behavior
 --input | -i | selects `data.json` schema file to open up
 --format | -f | allows you to choose different output formats (cli, csv, html, pdf)
 --output | -o | specify `Name of File` to be output
---date | -d | filters by date `'February, Feb, 01` allows case insensitive. Also allows filtering by `week` and `month` which filters by the current week and current month respectively.
+--date | -d | filters by numerous date styles `'February, Feb, 02` read below
 --search | -s | searches for a string like `magic` contained within a longer string `I love doing magic tricks`
 --trim | -t | filters by an item like 'client' (currently hardcoded value)
 --price | -p | Override the calculated price with a fixed price
@@ -63,6 +63,13 @@ This command should have printed data to your command line that matches your tri
 ```
 node conjuror.js -i data/clients.json -o "Feb Invoice" -t client-name --date=Feb
 ```
+
+The following examples are formats of dates values you can pass using the `--date` flag
+
+- Month - `February` or `Feb` or `02` which picks month of current year
+- Exact - `2015-09-04` gets all values since date
+- Range - `2015-09-04:to:2015-11-15` selects between two exact values
+
 
 The above example should have outputted an HTML rendering of your the entries parsed from your data. The output will be located in `output/Feb Invoice.html`
 
