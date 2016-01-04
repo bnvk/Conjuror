@@ -4,9 +4,6 @@ var config        = require('./lib/conjuror.config.js');
 // Run the imported options.
 var args = argv.run();
 
-// File Manipulation
-var SaveFile = require('./lib/save_file');
-
 var Conjuror = require('./lib/conjuror.basic.js');
 
 // Load Conjuror Modules
@@ -24,6 +21,7 @@ if (Conjuror.recipes[args.options.recipe] !== undefined) {
     Conjuror.getIngredients(config.get_file_path(), function(config) {
       // don't really care of the status of config for the moment.
       // let's just supply sensible defaults.
+      args.config = config;
       Conjuror.Grow(args.options.input, args);
     });
   } else {
