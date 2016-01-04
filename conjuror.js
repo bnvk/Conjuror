@@ -1,15 +1,5 @@
-var Promise = require('es6-promise').Promise;
-var cheerio = require("cheerio");
-var fs      = require("fs");
-var _       = require('underscore');
-var moment  = require('moment');
-var net     = require('net');
-var path    = require('path');
-var repl    = require('repl');
-var csv     = require('csv');
-var wkhtmltopdf   = require('wkhtmltopdf');
-var config        = require('./lib/conjuror.config.js')
 var argv          = require('./lib/conjuror.options.js');
+var config        = require('./lib/conjuror.config.js');
 
 // Run the imported options.
 var args = argv.run();
@@ -34,8 +24,7 @@ if (Conjuror.recipes[args.options.recipe] !== undefined) {
     Conjuror.getIngredients(config.get_file_path(), function(config) {
       // don't really care of the status of config for the moment.
       // let's just supply sensible defaults.
-      args.config = config;
-      Conjuror.Grow(args.options.input);
+      Conjuror.Grow(args.options.input, args);
     });
   } else {
     console.log('404 No spell found \nAre you sure you specified an --input -i value');
