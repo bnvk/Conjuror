@@ -124,16 +124,29 @@ dd { margin-left: 1em; font-style: italic; }
     <% } %>
 
     <div class="left">
-      <h4>Total Hours Worked: <%= hours_total %></h4>
-      <h4>Payment Due: <%= currency %><%= money_total %></h4>
+      <h4>Invoice</h4>
+      <p>
+        <strong>Total Hours Worked:</strong> <%= hours_total %><br>
+        <strong>Payment Due:</strong> <%= currency %><%= money_total %>
+      </p>
+      <% if (schema.bill_to) { %>
+      <p>
+        <strong>Bill To:</strong><br>
+        <%= schema.bill_to.name %><br>
+        <%= schema.bill_to.address %><br>
+        <%= schema.bill_to.city %>, <%= schema.bill_to.postal %><br>
+        <%= schema.bill_to.country %>
+      </p>
+      <% } %>
     </div>
-
-    <div class="right text-right">
-      <em>Design. Code. Freedom.</em><br>
-      <em>Made with <a href="https://github.com/bnvk/Conjuror" target="_blank">Conjuror</a></em>
-      <br/>
-      <%= user.extra %>
-      <%= extra %>
+    <div class="right">
+      <h4>Payment Info:</h4>
+      <p>
+        <%= user.display_name %><br>
+        <%= user.address %><br>
+        <%= user.city_state %>, <%= user.display_name %><br>
+        <%= user.country %>
+      </p>
     </div>
 
     <div class="clear"></div>

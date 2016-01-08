@@ -67,6 +67,8 @@ Conjuror.summonUser = function(callback){
 
 Conjuror.magickData = function(data, schema, date) {
 
+console.log(schema.billing_to)
+
   var outputs = {
     totals: {
       hours: 0,
@@ -183,7 +185,7 @@ Conjuror.castToCSV = function(outputs) {
 
 
 // Output HTML
-Conjuror.castToHTML = function(outputs, user){
+Conjuror.castToHTML = function(outputs, user, resource) {
 
   if (_.indexOf(args.options.format, 'html') > -1 || _.indexOf(args.options.format, 'pdf') > -1) {
 
@@ -215,6 +217,7 @@ Conjuror.castToHTML = function(outputs, user){
         var template_html = _.template(template_file);
 
         var template_data = {
+          schema: resource.schema,
           client: outputs.client,
           invoice_number: args.options.invoicenumber,
           generated_name: output_name,
@@ -303,9 +306,9 @@ Conjuror.Twirl = function(path, resource, client_path, callback) {
           // Get User
           Conjuror.summonUser(function(user_data) {
             if (user_data && user_data.error === undefined){
-              Conjuror.castToHTML(outputs, user_data);
+              Conjuror.castToHTML(outputs, user_data, resource);
             } else {
-              Conjuror.castToHTML(outputs, undefined);
+              Conjuror.castToHTML(outputs, undefined, resource);
             }
             // return callback for test purposes, and for future func?
             if (callback) return callback();
