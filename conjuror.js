@@ -25,6 +25,8 @@ Conjuror.Date = require('./lib/conjuror.date.js');
 Conjuror.Trim = require('./lib/conjuror.trim.js');
 Conjuror.Search = require('./lib/conjuror.search.js');
 
+// App path
+var app_path = __filename.replace('conjuror.js', '')
 
 Conjuror.getClient = function(client_file, trim, callback) {
   // Takes as input a client.json file, the client slug to trim by,
@@ -175,7 +177,7 @@ Conjuror.castToCSV = function(outputs) {
     }
 
     // Save CSV
-    var saveFile = SaveFile(fs, 'output/' + output_name + '.csv', outputs.csv);
+    var saveFile = SaveFile(fs, app_path + 'output/' + output_name + '.csv', outputs.csv);
   }
 }
 
@@ -187,7 +189,7 @@ Conjuror.castToHTML = function(outputs, user){
 
     // Get HTML Template
     var template = args.config.invoice_template || 'invoice';
-    var template_path = './templates/' + template + '.html';
+    var template_path = app_path + 'templates/' + template + '.html';
 
     Conjuror.readManuscript(template_path)
 
@@ -227,7 +229,7 @@ Conjuror.castToHTML = function(outputs, user){
         var output_html = template_html(template_data);
         // Save HTML file
         if (_.indexOf(args.options.format, 'html') > -1) {
-          var saveFile = SaveFile(fs, 'output/' + output_name + '.html', output_html);
+          var saveFile = SaveFile(fs, app_path + 'output/' + output_name + '.html', output_html);
         }
 
         // Save PDF file
@@ -243,7 +245,7 @@ Conjuror.castHTMLToPDF = function(output_html, output_name){
     console.log('Saving as a PDF');
     wkhtmltopdf(output_html, {
       pageSize: 'letter',
-      output: 'output/' + output_name + '.pdf'
+      output: app_path + 'output/' + output_name + '.pdf'
     });
   }
 };
