@@ -12,6 +12,8 @@ Conjuror.Date = require('./lib/conjuror.date.js');
 Conjuror.Trim = require('./lib/conjuror.trim.js');
 Conjuror.Search = require('./lib/conjuror.search.js');
 
+var app_path = __filename.replace('conjuror.js', '')
+
 if (Conjuror.recipes[args.options.recipe] !== undefined) {
   console.log("We're going to", Conjuror.recipes[args.options.recipe].description);
 } else {
@@ -22,8 +24,10 @@ if (Conjuror.recipes[args.options.recipe] !== undefined) {
       // don't really care of the status of config for the moment.
       // let's just supply sensible defaults.
       args.config = config;
+      args.app_path = app_path;
       Conjuror.Grow(args.options.input, args);
-    });
+
+    })
   } else {
     console.log('404 No spell found \nAre you sure you specified an --input -i value');
   }
