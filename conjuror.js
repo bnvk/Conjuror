@@ -205,6 +205,12 @@ Conjuror.castToHTML = function(outputs, user){
           output_name = args.options.output;
         }
 
+        if (args.options.details) {
+          var data_details = args.options.details
+        } else {
+          var data_details = 'show'
+        }
+
         var template_file = buffer.toString("utf8", 0, buffer.length);
         var template_html = _.template(template_file);
 
@@ -213,6 +219,7 @@ Conjuror.castToHTML = function(outputs, user){
           invoice_number: args.options.invoicenumber,
           generated_name: output_name,
           generated_date: moment().format('Do MMMM, YYYY'),
+          data_details: data_details,
           hours_rows: outputs.html,
           hours_total: outputs.totals.hours,
           money_total: outputs.totals.money,

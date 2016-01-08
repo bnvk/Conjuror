@@ -115,11 +115,13 @@ dd { margin-left: 1em; font-style: italic; }
     <div class="clear"></div>
     <hr>
 
+    <% if (data_details == 'show') { %>
     <h4>Hours Worked</h4>
     <table width="100%" cellpadding="0" cellspacing="0" border="0">
-      <%= hours_rows %>
+    	<%= hours_rows %>
     </table>
     <hr>
+    <% } %>
 
     <div class="left">
       <h4>Total Hours Worked: <%= hours_total %></h4>
