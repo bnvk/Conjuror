@@ -1,25 +1,22 @@
 ![The Magical Conjuror](images/bearded-wizard.png)
 
+[![NPM](https://nodei.co/npm/conjuror.png)](https://nodei.co/npm/conjuror/)
+
 Conjuror
 ---
 
-Conjuror, the magical time tracking wizard who knows how you spend all your time and dons an epic beard. Kind of like Santa Claus, sans the whole naughty or nice bit.
-
-## Data Format
-
-The data which Conjuror consumes is simple CSV data that also implements [Data Protocols](http://dataprotocols.org) and was inspired by [this blog post](http://blog.okfn.org/2013/07/02/git-and-github-for-data/) from Rufus Pollock of [OKFN](http://okfn.org). Currently Conjuror supports & makes bare minimum use of [JSON Table Schema](http://dataprotocols.org/json-table-schema/).
+Conjuror is magical wizard who knows how to do cool things with CSV data and dons an epic beard- kind of like Santa Claus, sans the whole naughty or nice bit. Conjuror is based on [Data Packages](http://data.okfn.org/doc/publish), which are a nifty way to wrap simple CSV data in JSON, and was created by the [OKFN](http://okfn.org).
 
 #### Getting Started
 
-1. First thing to do is create a config file by running `node setup.js` and walk through the steps
-2. In order to use Conjuror to keep track of something like billable hours / freelance work, locate the following two files:
+1. First install Conjuror `npm install -g conjuror`
+1. Then set it up by running setup script `node cli/setup.js`
+2. To use Conjuror to you will need to make copies of the following two data files:
 
 * `data/_template.csv`
 * `data/_template.json`
 
-Make a copy of both files and rename them something like `clients.csv` or `receipts.csv` whatever suits your needs. You can add extra values to the Schema & CSV columns as you see it.
-
-Once the Schema & CSV matches, you can start adding data items to the CSV such as:
+Rename these files something like `clients.csv` or `receipts.csv` or whatever suits your needs add modify the values of the JSON schema & CSV columns as you see it. Once the schema & CSV matches, you can start adding data items to the CSV such as:
 
 ```
 date, time, description, client, location, rate
@@ -27,11 +24,11 @@ date, time, description, client, location, rate
 2015-02-08, 2, updated commands & documentation, mailpile, home, 0.00
 ```
 
-You can manually add items to the CSV, or you can use the rough implemenation of the time tracker tool by running a separate script called `track.js` read more about this below.
+*You can manually add items to the CSV, or you can use the rough implemenation of the time tracker tool by running a separate script called `ctrack` read more about this below.*
 
-## Commands
+## Conjuror Output Commands
 
-To perform reports just type `node conjuror.js` into your command line with one of the following flags
+To perform reports just type `conjuror` into your command line with one of the following flags
 
 #### Flags
 
@@ -81,12 +78,12 @@ To generate PDF outputs, you need to install [wkhtmltopdf](http://wkhtmltopdf.or
 
 
 Tracker (adding entries)
----
+------------------------
 
 There is currently a rough tracker tool that allows adding of entries via an interactive CLI. To this tool, type the following command:
 
 ```
-node track.js -i path/to/your-file.csv
+ctrack -i path/to/your-file.csv
 ```
 
 The track tool will then open that file and create suggestions that make it easier to add items that match that of previous entries. This feature is rough and has not been tested should be somewhat useful.
@@ -95,6 +92,6 @@ The track tool will then open that file and create suggestions that make it easi
 
 ### Why The Magical Name & Terminology?
 
-Well, this used to be called Beardo, which was a joke, but then I realized a big part of the name was because I really only wanted to use this icon of a magical bearded wizard. It's also largely inspired by the [@CyberWizardInstitute](https://github.com/CyberWizardInstitute).
+Well, there is that quote by Asimov about technology... there is also the [Cyber Wizard Institute](https://github.com/CyberWizardInstitute) which you should check out... and I really wanted to use this icon of a magical bearded wizard which came from my friend Max who is obsessed with JS
 
 ![Made in Berlin](images/Made-in-Berlin.png)
