@@ -46,7 +46,9 @@ Flag | Short Flag | Behavior
 --trim | -t | filters by an item like 'client' (currently hardcoded value)
 --price | -p | Override the calculated price with a fixed price
 --currency | -c | what currency the thing is in
---extra | -e | Text to appear in the `extra` field in the template. Overrides the extra field in config.
+--extra | -e | Text that appears in `extra` field of template (overrides field in config).
+--details | -l | Affects visibility of the `data_details` field in a templay (show, hide)
+--message | -m | Shows up as a `data_message` in a template
 
 Run either of the follow two examples from terminal command line
 
