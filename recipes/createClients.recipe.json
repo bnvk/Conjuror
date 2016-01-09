@@ -1,0 +1,18 @@
+[{
+  "options": [{
+      "name": "name",
+      "type": "string"
+    }, {
+      "name": "title",
+      "type": "string"
+    }, {
+      "name": "last_updated",
+      "type": "date"
+    }, {
+      "name": "resources",
+      "type": "resources",
+      "options": {
+        "has_path": true
+      }
+    }]
+}]
