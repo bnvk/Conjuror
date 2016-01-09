@@ -1,7 +1,7 @@
 {
   "name": "conjuror",
   "description": "A magical CSV data parsing and outputing wizard or witch",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "repository": {
     "url": "https://github.com/bnvk/Conjuror"
   },
@@ -23,6 +23,7 @@
   "dependencies": {
     "argv": "0.0.2",
     "bootstrap": "^3.3.2",
+    "chalk": "^1.1.1",
     "cheerio": "*",
     "csv": "^0.4.1",
     "es6-promise": "^2.0.1",
