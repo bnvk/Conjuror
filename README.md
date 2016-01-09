@@ -39,7 +39,7 @@ Flag | Short Flag | Behavior
 ------------ | ------------- | -------------
 --help | -h | shows list of commands
 --input | -i | selects `data.json` schema file to open up
---format | -f | allows you to choose different output formats (cli, csv, html, pdf)
+--formats | -f | allows you to choose different output formats (cli, csv, html, pdf)
 --output | -o | specify `Name of File` to be output
 --date | -d | filters by numerous date styles `'February, Feb, 02` read below
 --search | -s | searches for a string like `magic` contained within a longer string `I love doing magic tricks`
