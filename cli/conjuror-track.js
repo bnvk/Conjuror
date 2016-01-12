@@ -14,6 +14,8 @@ var moment    = require('moment')
 var config = require('../lib/conjuror.config.js')
 var Conjuror = require('../lib/conjuror.basic.js')
 
+var tracked_file = ''
+
 // CLI questions
 var questions = [{
     type: 'list',
@@ -133,9 +135,10 @@ function runApp(file) {
     var entryData = '\n' + _.values(answers).join(',')
 
     // Save entry
-    fs.appendFile(args.options.input, entryData, function (err) {
+    fs.appendFile(tracked_file, entryData, function (err) {
       if (err) throw err
-      console.log('Added to file: ' + entryData)
+      console.log(chalk.green('Hooray, added the following:')
+      console.log(chalk.blue(entryData))
     })
   })
 }
@@ -160,8 +163,8 @@ Conjuror.getIngredients(config.get_file_path(), function(config) {
       choices: project_names
     }], function(answer) {
 
-    var csv_file = _.findWhere(config.projects, { 'name': answer.input })
-    fs.readFile(csv_file.path, processProjectDetails)
+    tracked_file = _.findWhere(config.projects, { 'name': answer.input }).path
+    fs.readFile(tracked_file, processProjectDetails)
 
   })
 
