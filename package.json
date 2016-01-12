@@ -25,6 +25,7 @@
     "bootstrap": "^3.3.2",
     "chalk": "^1.1.1",
     "cheerio": "*",
+    "commander": "^2.9.0",
     "csv": "^0.4.1",
     "es6-promise": "^2.0.1",
     "fs": "*",

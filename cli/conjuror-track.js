@@ -3,34 +3,18 @@
  * run by typing `node track.js` in your console
  */
 
-"use strict";
-var fs        = require("fs");
-var csv       = require("csv");
-var _         = require('underscore');
-var argv      = require('argv');
-var inquirer  = require("inquirer");
-var moment    = require('moment');
+"use strict"
+var fs        = require('fs')
+var csv       = require('csv')
+var _         = require('underscore')
+var chalk     = require('chalk')
+var inquirer  = require('inquirer')
+var moment    = require('moment')
 
+var config = require('../lib/conjuror.config.js')
+var Conjuror = require('../lib/conjuror.basic.js')
 
-// Args
-argv.option({
-  name: 'input',
-  short: 'i',
-  type: 'string',
-  description: 'Defines a CSV file for you to open',
-  example: "'track.js --input=value' or 'track.js -i data/work.csv"
-});
-
-argv.option({
-  name: 'timer',
-  short: 't',
-  type: 'boolean',
-  description: 'Times instead of direct implementation',
-  example: "'track.js --timer -i data/work.csv' or track.js -t -i data/work/csv"
-});
-
-
-// File Manipulation
+// CLI questions
 var questions = [{
     type: 'list',
     name: 'date',
@@ -39,17 +23,17 @@ var questions = [{
     filter: function(val) {
       var date = moment();
       if (val === 'yesterday') {
-        date = date.subtract(1, 'days');
+        date = date.subtract(1, 'days')
       }
       else if (val === 'two days ago') {
-        date = date.subtract(2, 'days');
+        date = date.subtract(2, 'days')
       }
       else if (val === 'three days ago') {
-        date = date.subtract(3, 'days');
+        date = date.subtract(3, 'days')
       }
       else if (val === 'other') {
         // FIXME: need to add a way to handle alternate
-        date = date;
+        date = date
       }
 
       return date.format('YYYY-MM-DD')
@@ -60,8 +44,8 @@ var questions = [{
     message: 'How long did you do this for? 1.5 (hrs)',
     default: '1.00',
     validate: function(value) {
-      var valid = !isNaN(parseFloat(value));
-      return valid || "Please enter a number";
+      var valid = !isNaN(parseFloat(value))
+      return valid || "Please enter a number"
     }
   },{
     type: 'input',
@@ -84,23 +68,24 @@ var questions = [{
     message: "How much are you charging?",
     choices: [],
     validate: function(value) {
-      var valid = !isNaN(parseFloat(value));
-      return valid || "Please enter a number";
+      var valid = !isNaN(parseFloat(value))
+      return valid || "Please enter a number"
     }
   }
-];
+]
 
 
-function openFileFinished(error, fileData) {
+function processProjectDetails(error, fileData) {
+
   if (error) {
-    return console.error('Had a project with opening file', error);
+    return console.error(chalk.red('Had a project with opening file'), error)
   }
 
   // Examine data
   csv.parse(fileData, function(error, csvData) {
 
     if (error) {
-      return console.log('Had a problem with the CSV data: ', error);
+      return console.log(chalk.red('Had a problem with the CSV data: '), error)
     }
 
     // Loop Lines
@@ -111,33 +96,32 @@ function openFileFinished(error, fileData) {
 
         // Projects
         if (_.indexOf(questions[3].choices, line[3]) === -1 && line[3]) {
-          questions[3].choices.push(line[3]);
+          questions[3].choices.push(line[3])
         }
 
         // Locations
         if (_.indexOf(questions[4].choices, line[4]) === -1 && line[4]) {
-          questions[4].choices.push(line[4]);
+          questions[4].choices.push(line[4])
         }
 
         // Rates
         if (_.indexOf(questions[5].choices, line[5]) === -1 && line[5]) {
-          questions[5].choices.push(line[5]);
+          questions[5].choices.push(line[5])
         }
       }
-    });
+    })
 
     // Refine (rate)
-    questions[5].choices.sort(function compareNumbers(a, b) { return a - b });
+    questions[5].choices.sort(function compareNumbers(a, b) { return a - b })
 
     // Run CLI
-    runApp();
-  });
-
+    runApp()
+  })
 }
 
 
 // Run App
-function runApp() {
+function runApp(file) {
 
   // Run CLI
   inquirer.prompt(questions, function(answers) {
@@ -146,29 +130,39 @@ function runApp() {
     // Add quotes so that the string escapes commas.
     // TODO: probably escape other characters as well.
     answers.description = '"' + answers.description + '"'
-    var entryData = '\n' + _.values(answers).join(',');
+    var entryData = '\n' + _.values(answers).join(',')
 
     // Save entry
     fs.appendFile(args.options.input, entryData, function (err) {
-      if (err) throw err;
-      console.log('Added to file: ' + entryData);
-    });
-  });
+      if (err) throw err
+      console.log('Added to file: ' + entryData)
+    })
+  })
 }
 
 
-console.log('Ahoy pilgrim. Conjuror is ready to track');
-
-
-// Start It Up
-var args = argv.run();
+console.log(chalk.green('Ahoy, Conjuror is ready to track'))
 
 // Check for Input
-if (args.options.input !== undefined) {
-  fs.readFile(args.options.input, openFileFinished);
-} else {
-  console.log('Oops, no data. Are you sure you specified an --input -i value?');
-}
+Conjuror.getIngredients(config.get_file_path(), function(config) {
 
+  var project_names = []
 
+  _.each(config.projects, function(project, key) {
+    project_names.push(project.name)
+  })
 
+  // Ask for project
+  inquirer.prompt([{
+      type: 'list',
+      name: 'input',
+      message: 'Which project do you want to track?',
+      choices: project_names
+    }], function(answer) {
+
+    var csv_file = _.findWhere(config.projects, { 'name': answer.input })
+    fs.readFile(csv_file.path, processProjectDetails)
+
+  })
+
+})
