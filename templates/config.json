@@ -1,0 +1,23 @@
+{
+  "default_template":"invoice",
+  "path_templates": "/home/user/Templates/",
+  "path_output": "/home/user/Generated/",
+  "user": {
+    "display_name": "Merlin",
+    "address": "457 Magic Woods Ln.",
+    "city_state": "Sherwood, NW463",
+    "country": "England",
+    "email": "merlin@magic-lab.org",
+    "website": "https://magic-lab.org"
+  },
+  "client": {
+    "dogs": "cats"
+  },
+  "projects": [{
+    "name": "Client Work",
+    "path": "/home/user/Data/work.csv"
+  },{
+    "name": "Fun Projects",
+    "path": "/home/user/Data/projects.csv"
+  }]
+}
