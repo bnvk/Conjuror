@@ -137,7 +137,7 @@ function runApp(file) {
     // Save entry
     fs.appendFile(tracked_file, entryData, function (err) {
       if (err) throw err
-      console.log(chalk.green('Hooray, added the following:')
+      console.log(chalk.green('Hooray, added the following:'))
       console.log(chalk.blue(entryData))
     })
   })
