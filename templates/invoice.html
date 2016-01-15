@@ -130,7 +130,7 @@ dd { margin-left: 1em; font-style: italic; }
       <% } %>
       <p>
         <strong>Total Hours Worked:</strong> <%= hours_total %><br>
-        <strong>Payment Due:</strong> <%= currency %><%= money_total %>
+        <strong>Payment Due:</strong> <%= money_total %> <%= currency %>
       </p>
       <% if (resource.client) { %>
       <p>
@@ -156,10 +156,11 @@ dd { margin-left: 1em; font-style: italic; }
         <% if (resource.payment.bank) { %><%= resource.payment.bank %><br><% } %>
         <% if (resource.payment.address_one) { %><%= resource.payment.address_one %><br><% } %>
         <% if (resource.payment.address_two) { %><%= resource.payment.address_two %><br><% } %>
-        <% if (resource.payment.iban) { %><%= resource.payment.iban %><br><% } %>
-        <% if (resource.payment.bic) { %><%= resource.payment.bic %><br><% } %>
-        <% if (resource.payment.account) { %><%= resource.payment.account %><br><% } %>
-        <% if (resource.payment.routing) { %><%= resource.payment.routing %><% } %>
+        <% if (resource.payment.country) { %><%= resource.payment.country %><br><% } %>
+        <% if (resource.payment.iban) { %>IBAN: <%= resource.payment.iban %><br><% } %>
+        <% if (resource.payment.bic) { %>BIC: <%= resource.payment.bic %><br><% } %>
+        <% if (resource.payment.account) { %>Account: <%= resource.payment.account %><br><% } %>
+        <% if (resource.payment.routing) { %>Routing: <%= resource.payment.routing %><% } %>
       </p>
       <% } %>
     </div>

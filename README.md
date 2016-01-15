@@ -46,6 +46,7 @@ Flag | Short Flag | Behavior
 --extra | -e | Text that appears in `extra` field of template (overrides field in config).
 --details | -l | Affects visibility of the `data_details` field in a templay (show, hide)
 --message | -m | Shows up as a `data_message` in a template
+--generated | -g | Allows specifying custom invoice date
 
 Run either of the follow two examples from terminal command line
 
