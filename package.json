@@ -27,6 +27,8 @@
     "cheerio": "*",
     "commander": "^2.9.0",
     "csv": "^0.4.1",
+    "datapackage-query": "^0.1.6",
+    "datapackage-read": "^0.2.2",
     "es6-promise": "^2.0.1",
     "fs": "*",
     "inquirer": "*",
