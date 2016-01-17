@@ -1,4 +1,4 @@
-[{
+{
   "name": "hours",
   "title": "This collection represents hours worked for openfarm",
   "version": "2015",
@@ -44,4 +44,4 @@
         ]
      }
   }]
-}]
+}
