@@ -14,7 +14,8 @@
   ],
   "bin": {
     "conjuror": "./bin/conjuror",
-    "ctrack": "./bin/ctrack"
+    "ctrack": "./bin/ctrack",
+    "coutput": "./bin/coutput"
   },
   "author": "Brennan Novak <hi@bnvk.me>",
   "contributors": [
