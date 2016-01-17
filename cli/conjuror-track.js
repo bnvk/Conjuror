@@ -10,6 +10,7 @@ var _         = require('underscore')
 var chalk     = require('chalk')
 var inquirer  = require('inquirer')
 var moment    = require('moment')
+var read      = require('datapackage-read')
 
 var config = require('../lib/conjuror.config.js')
 var Conjuror = require('../lib/conjuror.basic.js')
@@ -77,14 +78,10 @@ var questions = [{
 ]
 
 
-function processProjectDetails(error, fileData) {
-
-  if (error) {
-    return console.error(chalk.red('Had a project with opening file'), error)
-  }
+function processProjectDetails(csv_data, csv_file) {
 
   // Examine data
-  csv.parse(fileData, function(error, csvData) {
+  csv.parse(csv_data, function(error, csvData) {
 
     if (error) {
       return console.log(chalk.red('Had a problem with the CSV data: '), error)
@@ -117,13 +114,13 @@ function processProjectDetails(error, fileData) {
     questions[5].choices.sort(function compareNumbers(a, b) { return a - b })
 
     // Run CLI
-    runApp()
+    runApp(csv_file)
   })
 }
 
 
 // Run App
-function runApp(file) {
+function runApp(csv_file) {
 
   // Run CLI
   inquirer.prompt(questions, function(answers) {
@@ -135,7 +132,7 @@ function runApp(file) {
     var entryData = '\n' + _.values(answers).join(',')
 
     // Save entry
-    fs.appendFile(tracked_file, entryData, function (err) {
+    fs.appendFile(csv_file, entryData, function (err) {
       if (err) throw err
       console.log(chalk.green('Hooray, added the following:'))
       console.log(chalk.blue(entryData))
@@ -144,7 +141,7 @@ function runApp(file) {
 }
 
 
-console.log(chalk.green('Ahoy, Conjuror is ready to track'))
+console.log(chalk.blue('Ahoy, Conjuror is ready to track'))
 
 // Check for Input
 Conjuror.getIngredients(config.get_file_path(), function(config) {
@@ -164,8 +161,25 @@ Conjuror.getIngredients(config.get_file_path(), function(config) {
     }], function(answer) {
 
     tracked_file = _.findWhere(config.projects, { 'name': answer.input }).path
-    fs.readFile(tracked_file, processProjectDetails)
 
+    // Open JSON
+    read.load(tracked_file, function(error, json_data) {
+
+      if (error) {
+        return console.error(chalk.red('Had a project with opening file'), error)
+      }
+
+      Conjuror.readManuscript(json_data.resources[0].url)
+        .then(function(buffer) {
+
+          var csv_data = buffer.toString("utf8", 0, buffer.length)
+          processProjectDetails(csv_data, json_data.resources[0].url)
+
+        }).catch(function(error) {
+          console.log(chalk.red("Error while Twirling: "), error)
+          if (callback) return callback(Error)
+        })
+    })
   })
 
 })

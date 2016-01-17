@@ -10,9 +10,6 @@
     "email": "merlin@magic-lab.org",
     "website": "https://magic-lab.org"
   },
-  "client": {
-    "dogs": "cats"
-  },
   "projects": [{
     "name": "Client Work",
     "path": "/home/user/Data/work.csv"
