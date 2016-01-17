@@ -9,10 +9,10 @@ var program = require('commander')
 
 program
   .version(pkg.version)
-  .command('import <dir>', 'Create a new project file')
-  .command('run <project>', 'Open an existing project file')
+  .command('setup', 'Process and output a project file')
+  .command('project <project>', 'Create a new project file')
+  .command('output <project>', 'Outputs data from an project')
   .command('track <project>', 'Add source to existing project')
-  .command('setup <project>', 'Process and output a project file')
   .parse(process.argv)
 
 module.exports = Cli
