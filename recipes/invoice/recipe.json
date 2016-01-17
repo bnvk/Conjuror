@@ -1,0 +1,16 @@
+{
+  "formats": ["cli", "csv", "html", "pdf"],
+  "filters": {
+    "date": ["date"],
+    "trim": ["string", "number"],
+    "search": ["string", "number"]
+  },
+  "instructions": [{
+    "process": [{
+      "increment": "time"
+    },{
+      "multiply": ["time", "rate"]
+    }],
+    "template": "tallied-data.html"
+  }]
+}
