@@ -130,15 +130,16 @@ dd { margin-left: 1em; font-style: italic; }
       <% } %>
       <p>
         <strong>Total Hours Worked:</strong> <%= hours_total %><br>
-        <strong>Payment Due:</strong> <%= currency %><%= money_total %>
+        <strong>Payment Due:</strong> <%= money_total %> <%= currency %>
       </p>
-      <% if (schema.bill_to) { %>
+      <% if (resource.client) { %>
       <p>
         <strong>Bill To:</strong><br>
-        <%= schema.bill_to.name %><br>
-        <%= schema.bill_to.address %><br>
-        <%= schema.bill_to.city %>, <%= schema.bill_to.postal %><br>
-        <%= schema.bill_to.country %>
+        <% if (resource.client.name) { %><%= resource.client.name %><br><% } %>
+        <% if (resource.client.tax_id) { %><%= resource.client.tax_id %><br><% } %>
+        <% if (resource.client.address) { %><%= resource.client.address %><br><% } %>
+        <% if (resource.client.city) { %><%= resource.client.city %>, <%= resource.client.postal %><br><% } %>
+        <% if (resource.client.country) { %><%= resource.client.country %><% } %>
       </p>
       <% } %>
     </div>
@@ -150,6 +151,19 @@ dd { margin-left: 1em; font-style: italic; }
         <%= user.city_state %>, <%= user.display_name %><br>
         <%= user.country %>
       </p>
+      <% if (resource.payment) { %>
+      <p>
+        <strong>Deposit To:</strong><br>
+        <% if (resource.payment.bank) { %><%= resource.payment.bank %><br><% } %>
+        <% if (resource.payment.address_one) { %><%= resource.payment.address_one %><br><% } %>
+        <% if (resource.payment.address_two) { %><%= resource.payment.address_two %><br><% } %>
+        <% if (resource.payment.country) { %><%= resource.payment.country %><br><% } %>
+        <% if (resource.payment.iban) { %>IBAN: <%= resource.payment.iban %><br><% } %>
+        <% if (resource.payment.bic) { %>BIC: <%= resource.payment.bic %><br><% } %>
+        <% if (resource.payment.account) { %>Account: <%= resource.payment.account %><br><% } %>
+        <% if (resource.payment.routing) { %>Routing: <%= resource.payment.routing %><% } %>
+      </p>
+      <% } %>
     </div>
 
     <div class="clear"></div>

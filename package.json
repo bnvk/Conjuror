@@ -1,7 +1,7 @@
 {
   "name": "conjuror",
   "description": "A magical CSV data parsing and outputing wizard or witch",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "repository": {
     "url": "https://github.com/bnvk/Conjuror"
   },
@@ -14,7 +14,8 @@
   ],
   "bin": {
     "conjuror": "./bin/conjuror",
-    "ctrack": "./bin/ctrack"
+    "ctrack": "./bin/ctrack",
+    "coutput": "./bin/coutput"
   },
   "author": "Brennan Novak <hi@bnvk.me>",
   "contributors": [
@@ -25,7 +26,10 @@
     "bootstrap": "^3.3.2",
     "chalk": "^1.1.1",
     "cheerio": "*",
+    "commander": "^2.9.0",
     "csv": "^0.4.1",
+    "datapackage-query": "^0.1.6",
+    "datapackage-read": "^0.2.2",
     "es6-promise": "^2.0.1",
     "fs": "*",
     "inquirer": "*",

@@ -6,11 +6,12 @@
 var fs        = require("fs")
 var _         = require('underscore')
 var inquirer  = require("inquirer")
-var mkdirp = require('mkdirp')
-var config = require('./lib/conjuror.config.js')
+var mkdirp    = require('mkdirp')
+var chalk     = require('chalk')
 
+var config    = require('../lib/conjuror.config.js')
 
-// File Manipulation
+// CLI Questions
 var questions = [{
     type: 'input',
     name: 'display_name',
@@ -51,14 +52,14 @@ function runSetup() {
   inquirer.prompt(questions, function(answers) {
 
     var config_data = {
-      'invoice_template': 'invoice',
+      'default_template': 'invoice',
       'user': answers
     }
 
     // Save Config
     fs.appendFile(config.get_file_path(), JSON.stringify(config_data), function (err) {
       if (err) throw err
-      console.log('Created config file')
+      console.log(chalk.green('Created config file'))
       console.log(config_data)
     })
   })
@@ -67,7 +68,7 @@ function runSetup() {
 // Check if config exists
 fs.exists(config.get_file_path(), function(exists) {
   if (exists) {
-    console.log('Shazzam there is already a config file');
+    console.log(chalk.red('Shazzam there is already a config file'))
   } else {
     mkdirp(config.get_path(), function (err) {
       runSetup()
