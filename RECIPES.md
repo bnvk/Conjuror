@@ -5,6 +5,8 @@ The following is an example of what I'm thinking a recipe *could* look like and 
 
 ```
 {
+  "name": "invoice",
+  "description": "A recipe for generating invoices based on hourly logged work with categories and descriptions",  
   "formats": ["cli", "csv", "html", "pdf"],
   "filters": {
     "date": ["date"],

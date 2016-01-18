@@ -1,4 +1,6 @@
 {
+  "name": "expenses",
+  "description": "A recipe for creating invoices based on expenses",
   "formats": ["cli", "csv", "html", "pdf"],
   "filters": {
     "date": ["date"],
