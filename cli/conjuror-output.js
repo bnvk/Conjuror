@@ -25,29 +25,23 @@ var questions = [{
     message: 'Select a project to run a report'
   },{
     type: 'input',
-    name: 'date',
-    message: 'Specify date / range to filter by'
-  },{
-    type: 'checkbox',
-    name: 'formats',
-    message: 'Select formats to output this report',
-    choices: ['pdf', 'html', 'csv'],
-    default: 'pdf'
-  },{
-    type: 'input',
     name: 'output',
     message: 'Name this report',
     default: ''
   },{
     type: 'input',
-    name: 'invoicenumber',
-    message: 'Does this report have a number',
-    default: 0
+    name: 'date',
+    message: 'Specify date to filter by'
   },{
     type: "input",
     name: "generated",
     message: "What date is this generated on",
     default: 'today'
+  },{
+    type: 'input',
+    name: 'invoicenumber',
+    message: 'Does this report have a number',
+    default: 0
   },{
     type: "input",
     name: "extra",
@@ -74,6 +68,12 @@ var questions = [{
     message: 'What country do you live in',
     choices: ['USD', 'Euro', 'GPB', 'Bitcoin'],
     default: 'USD'
+  },{
+    type: 'checkbox',
+    name: 'formats',
+    message: 'Select formats to output this report',
+    choices: ['pdf', 'html', 'csv'],
+    default: 'pdf'
   }
 ]
 
@@ -100,11 +100,8 @@ function runOutput() {
         app_path: app_path
       }
 
-      console.log(args)
       Conjuror.Grow(args)
-
     })
-
   })
 }
 
