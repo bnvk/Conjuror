@@ -3,52 +3,49 @@
  */
 
 "use strict"
-var inquirer  = require("inquirer")
+var inquirer  = require('inquirer')
+var _         = require('underscore')
 var chalk     = require('chalk')
+var read      = require('datapackage-read')
 
 var config = require('../lib/conjuror.config.js')
 var Conjuror = require('../lib/conjuror.basic.js')
+
+// Load Conjuror Modules
+Conjuror.recipes = require('../lib/conjuror.recipes.js')
+Conjuror.Date = require('../lib/conjuror.date.js')
+Conjuror.Trim = require('../lib/conjuror.trim.js')
+Conjuror.Search = require('../lib/conjuror.search.js')
 
 // CLI Items
 var questions = [{
     type: 'list',
     name: 'input',
-    choices: [
-      '/home/user/Data/TimeTracking/ehealth.json',
-      '/home/user/Data/TimeTracking/qubes.json',
-      '/home/user/Data/TimeTracking/tt.json',
-      '/home/user/Data/TimeTracking/work.json'
-    ],
-    message: 'Select a dataset to run reports on'
-  },{
-    type: 'input',
-    name: 'date',
-    message: 'Specify date or range to filter data by'
-  },{
-    type: 'checkbox',
-    name: 'formats',
-    message: 'Specify formats to output the data',
-    choices: ['pdf', 'html', 'csv'],
-    default: 'pdf'
+    choices: [],
+    message: 'Select a project to run a report'
   },{
     type: 'input',
     name: 'output',
-    message: 'What do you want to call this output?',
+    message: 'Name this report',
     default: ''
   },{
     type: 'input',
-    name: 'invoicenumber',
-    message: 'Does this invoice have a number?'
+    name: 'date',
+    message: 'Specify date to filter by'
   },{
-    type: 'rawlist',
-    name: 'currency',
-    message: 'What country do you live in?',
-    choices: ['USD', 'Euro', 'GPB', 'Bitcoin'],
-    default: 'USD'
+    type: "input",
+    name: "generated",
+    message: "What date is this generated on",
+    default: 'today'
+  },{
+    type: 'input',
+    name: 'invoicenumber',
+    message: 'Does this report have a number',
+    default: 0
   },{
     type: "input",
     name: "extra",
-    message: "Any extra information?",
+    message: "Specify any extra information",
     default: ''
   },{
     type: "list",
@@ -60,18 +57,41 @@ var questions = [{
     type: "input",
     name: "message",
     message: "Add an optional message to report"
+  },{
+    type: 'input',
+    name: 'price',
+    message: 'Add a fixed price or leave blank to:',
+    default: 'tally'
+  },{
+    type: 'rawlist',
+    name: 'currency',
+    message: 'What country do you live in',
+    choices: ['USD', 'Euro', 'GPB', 'Bitcoin'],
+    default: 'USD'
+  },{
+    type: 'checkbox',
+    name: 'formats',
+    message: 'Select formats to output this report',
+    choices: ['pdf', 'html', 'csv'],
+    default: 'pdf'
   }
 ]
 
 // Run CLI
 function runOutput() {
 
-  inquirer.prompt(questions, function(answers) {
+  // Check for Input
+  Conjuror.getIngredients(config.get_file_path(), function(config) {
 
-    Conjuror.getIngredients(config.get_file_path(), function(config) {
+    _.each(config.projects, function(project, key) {
+      questions[0].choices.push(project.path)
+    })
+
+    inquirer.prompt(questions, function(answers) {
+
       // don't really care of the status of config for the moment.
       // let's just supply sensible defaults.
-      var app_path = __filename.replace('output.js', '')
+      var app_path = __filename.replace('cli/conjuror-output.js', '')
 
       var args = {
         targets: [],
@@ -80,10 +100,7 @@ function runOutput() {
         app_path: app_path
       }
 
-      console.log(args)
-
       Conjuror.Grow(args)
-
     })
   })
 }

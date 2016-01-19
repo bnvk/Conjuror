@@ -13,9 +13,7 @@
     "pdf"
   ],
   "bin": {
-    "conjuror": "./bin/conjuror",
-    "ctrack": "./bin/ctrack",
-    "coutput": "./bin/coutput"
+    "conjuror": "./bin/conjuror"
   },
   "author": "Brennan Novak <hi@bnvk.me>",
   "contributors": [
