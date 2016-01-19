@@ -140,9 +140,6 @@ function runApp(csv_file) {
   })
 }
 
-
-console.log(chalk.blue('Ahoy, Conjuror is ready to track'))
-
 // Check for Input
 Conjuror.getIngredients(config.get_file_path(), function(config) {
 
@@ -181,5 +178,4 @@ Conjuror.getIngredients(config.get_file_path(), function(config) {
         })
     })
   })
-
 })

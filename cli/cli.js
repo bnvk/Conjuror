@@ -21,7 +21,7 @@ var executed = false
 
 program
   .command('setup') // [env]')
-  .description('Sets up Conjuror on a machine')
+  .description('Setup Conjuror on a machine')
   //.option("-s, --setup_mode [mode]", "Which setup mode to use")
   .action(function(env, options) {
 
@@ -29,7 +29,7 @@ program
     executed = true
     //env = env || 'all';
     //console.log('setup for %s env(s) with %s mode', env, mode);
-    console.log(chalk.blue(' - Conjuror is running Setup'))
+    console.log(chalk.blue('- Conjuror is running setup'))
     var setup = require('./setup')
   })
 
@@ -39,7 +39,7 @@ program
   .action(function(cmd, options) {
 
     executed = true
-    console.log(chalk.blue(' - Conjuror is running View'))
+    console.log(chalk.blue('- Conjuror is running view'))
     var view = require('./view')
   })
 
@@ -49,7 +49,7 @@ program
   .action(function(cmd, options) {
 
     executed = true
-    console.log(chalk.blue(' - Conjurror is running Track'))
+    console.log(chalk.blue('- Conjurror is running track'))
     var track = require('./track')
   })
 
@@ -59,7 +59,7 @@ program
   .action(function(cmd, options) {
 
     executed = true
-    console.log(chalk.blue('- Conjuror is running Output'))
+    console.log(chalk.blue('- Conjuror is running output'))
     var output = require('./output')
   })
 

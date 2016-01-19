@@ -89,9 +89,7 @@ function runOutput() {
 
     inquirer.prompt(questions, function(answers) {
 
-      // don't really care of the status of config for the moment.
-      // let's just supply sensible defaults.
-      var app_path = __filename.replace('cli/conjuror-output.js', '')
+      var app_path = __filename.replace('cli/output.js', '')
 
       var args = {
         targets: [],
