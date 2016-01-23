@@ -29,8 +29,22 @@ program
     executed = true
     //env = env || 'all';
     //console.log('setup for %s env(s) with %s mode', env, mode);
-    console.log(chalk.blue('- Conjuror is running setup'))
+    console.log(chalk.blue('- Conjuror is seting ups'))
     var setup = require('./setup')
+  })
+
+program
+  .command('new') // [env]')
+  .description('Create a new Conjuror project')
+  //.option("-s, --setup_mode [mode]", "Which setup mode to use")
+  .action(function(env, options) {
+
+    //var mode = options.setup_mode || "normal";
+    executed = true
+    //env = env || 'all';
+    //console.log('setup for %s env(s) with %s mode', env, mode);
+    console.log(chalk.blue('- Creating a new project'))
+    var new_project = require('./new')
   })
 
 program
