@@ -10,7 +10,7 @@ Conjuror is magical wizard who knows how to do cool things with CSV data and don
 #### Getting Started
 
 1. First install Conjuror `npm install -g conjuror`
-1. Then set it up by running setup script `node cli/conjuror-setup.js`
+1. Then set it up by running setup script `conjuror setup`
 2. To use Conjuror to you will need to make copies of the following two data files:
 
 * `data/_template.csv`
@@ -28,11 +28,15 @@ date, time, description, client, location, rate
 
 ## Conjuror Commands
 
-- `ctrack` - CLI interface to add a new entry to an existing project
-- `coutput` - CLI interface to output a report
-- `conjuror` - A standard command line tool that accepts various flags
+- `conjuror` - shows a help screen with following commands
+- `conjuror setup` - setups up Conjuror on a new machine
+- `conjuror view` - renders filtered data to CLI for quick checks
+- `conjuror track` - add a new entry to an existing project
+- `conjuror output` - output a filtered report as PDF, HTML, and CSV
 
-#### Flags
+#### Flags (BROKEN AT THE MOMENT)
+
+Normally the `conjuror` command should accept flags to be run as a normal shell command, but I broke that recently!
 
 Flag | Short Flag | Behavior
 ------------ | ------------- | -------------
