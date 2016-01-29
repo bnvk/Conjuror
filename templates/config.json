@@ -12,9 +12,9 @@
   },
   "projects": [{
     "name": "Client Work",
-    "path": "/home/user/Data/work.csv"
+    "path": "/home/user/Data/work.json"
   },{
     "name": "Fun Projects",
-    "path": "/home/user/Data/projects.csv"
+    "path": "/home/user/Data/projects.json"
   }]
 }
