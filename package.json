@@ -1,7 +1,7 @@
 {
   "name": "conjuror",
   "description": "A magical CSV data parsing and outputing wizard or witch",
-  "version": "0.2.2",
+  "version": "0.2.4",
   "repository": {
     "url": "https://github.com/bnvk/Conjuror"
   },
@@ -15,7 +15,7 @@
   "bin": {
     "conjuror": "./bin/conjuror"
   },
-  "author": "Brennan Novak <hi@bnvk.me>",
+  "author": "Brennan Novak <hi@brennannovak.com>",
   "contributors": [
     "Simon Vansintjan <svansintjan@gmail.com>"
   ],

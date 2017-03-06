@@ -31,11 +31,6 @@ del { text-decoration: line-through; }
 table { border-collapse: collapse; border-spacing: 0; }
 strong { font-weight:bold; }
 em { font-style:italic; }
-
-/*  Social-Igniter : Theme : site_simple
-* Author : Brennan Novak
-*   Contact : contact@social-igniter.com
-*/
 * { margin: 0; }
 body    { height: 100%; margin: 0; font-family: 'Charter', Georgia, serif; font-size: 14px; line-height: 21px; }
 h1      { font-size: 26px; line-height: 1.6; margin: 0 0 10px 0; padding: 0px; font-weight: bold; }
@@ -129,8 +124,12 @@ dd { margin-left: 1em; font-style: italic; }
       <p><%= data_message %></p>
       <% } %>
       <p>
-        <strong>Total Hours Worked:</strong> <%= hours_total %><br>
-        <strong>Payment Due:</strong> <%= money_total %> <%= currency %>
+        <strong>Hours Worked:</strong> <%= hours_total %><br>
+        <strong>Money Earned:</strong> <%= money_total % <%= currency %>><br>
+        <strong>Tax <%= tax_percent %>% <%= tax %>:</strong> <%= tax_total %> <%= currency %>
+      </p>
+      <p class="section-important">
+        <strong>Total Due:</strong> <%= total_total %> <%= currency %>
       </p>
       <% if (resource.client) { %>
       <p>

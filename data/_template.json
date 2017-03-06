@@ -5,6 +5,28 @@
   "last_updated": "2015-02-08",
   "resources": [{
       "path": "data/_template.csv",
+      "format": "csv",
+      "mediatype": "text/csv",
+      "client": {
+        "name": "",
+        "tax_id": "",
+        "address": "",
+        "city": "",
+        "postal": "",
+        "country": ""
+      },
+      "payment": {
+        "bank": "",
+        "iban": "",
+        "bic": "",
+		"account": "",
+		"routing": "",
+        "address_one": "",
+        "address_two": "",
+        "country": "",
+        "currency": "",
+		"tax": ""
+      },
       "schema": {
         "fields": [{
             "name": "date",
