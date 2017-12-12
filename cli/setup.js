@@ -49,8 +49,7 @@ var questions = [{
 function runSetup() {
 
   // Run CLI
-  inquirer.prompt(questions, function(answers) {
-
+  inquirer.prompt(questions).then(answers => {
     var config_data = {
       'default_template': 'invoice',
       'user': answers

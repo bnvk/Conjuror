@@ -4,3 +4,4 @@ data/
 .conjuror/
 output/
 .DS_Store
+package-lock.json

@@ -48,10 +48,9 @@ function runOutput() {
       questions[0].choices.push(project.path)
     })
 
-    inquirer.prompt(questions, function(answers) {
+    inquirer.prompt(questions).then(answers => {
 
       var app_path = __filename.replace('cli/view.js', '')
-
       var args = {
         targets: [],
         options: answers,

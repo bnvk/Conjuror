@@ -155,7 +155,7 @@ Conjuror.getIngredients(config.get_file_path(), function(config) {
       name: 'input',
       message: 'Which project do you want to track?',
       choices: project_names
-    }], function(answer) {
+    }]).then(answer => {
 
     tracked_file = _.findWhere(config.projects, { 'name': answer.input }).path
 
@@ -178,4 +178,5 @@ Conjuror.getIngredients(config.get_file_path(), function(config) {
         })
     })
   })
+
 })

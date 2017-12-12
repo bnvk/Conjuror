@@ -49,7 +49,7 @@ function runNew() {
   // Check for Input
   Conjuror.getIngredients(config.get_file_path(), function(config) {
 
-    inquirer.prompt(questions, function(answers) {
+    inquirer.prompt(questions).then(answers => {
 
       var app_path = __filename.replace('cli/new.js', '')
 
