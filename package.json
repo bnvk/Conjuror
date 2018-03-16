@@ -10,12 +10,7 @@
     "type": "git",
     "url": "https://github.com/bnvk/Conjuror-API.git"
   },
-  "keywords": [
-    "mailpile",
-    "email",
-    "email",
-    "client"
-  ],
+  "keywords": [],
   "author": "Brennan Novak",
   "license": "AGPLv3",
   "bugs": {

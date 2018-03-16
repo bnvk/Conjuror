@@ -28,7 +28,7 @@ server.views({
 })
 
 // API Config
-var config = JSON.parse(fs.readFileSync('./config.json', 'utf8'));
+var config = JSON.parse(fs.readFileSync('./api.json', 'utf8'));
 console.log('Loaded API   config for: ' + config.name);
 
 // JSON Api
