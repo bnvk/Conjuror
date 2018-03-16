@@ -1,0 +1,13 @@
+{
+  "name": "Conjuror API",
+  "authors": ["Your Name <you@example.com>"],
+  "paths": {
+    "data": "/path/to/all/your/datas/"
+  },
+  "prefix": "data-",
+  "index": "toc",
+  "datasets": [
+    "your-package",
+    "another-package"
+  ]
+}

@@ -7,8 +7,10 @@
   },
   "main": "./conjuror",
   "keywords": [
-    "time tracking",
-    "time management",
+    "datapackage",
+    "invoicing",
+    "time-tracking",
+    "time-management",
     "csv",
     "pdf"
   ],
@@ -30,14 +32,15 @@
     "datapackage-read": "^0.2.2",
     "es6-promise": "^4.1.1",
     "fs": "0.0.1-security",
+    "good": "^5.1.2",
+    "good-console": "^4.1.0",
+    "hapi": "^8.4.0",
+    "hapi-json-view": "^2.1.0",
     "inquirer": "^4.0.1",
     "mkdir": "0.0.2",
     "moment": "^2.19.4",
     "underscore": "*",
     "wkhtmltopdf": "^0.3.4"
-  },
-  "engines": {
-    "node": "*"
   },
   "devDependencies": {
     "mocha": "^4.0.1"

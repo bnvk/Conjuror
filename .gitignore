@@ -1,7 +1,7 @@
+.conjuror/
+.DS_Store
 bower_components/
 node_modules/
 data/
-.conjuror/
 output/
-.DS_Store
-package-lock.json
+api.json
