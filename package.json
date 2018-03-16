@@ -1,7 +1,7 @@
 {
   "name": "conjuror",
   "description": "A magical CSV data parsing and outputing wizard or witch",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "repository": {
     "url": "https://github.com/bnvk/Conjuror"
   },
@@ -23,27 +23,27 @@
   ],
   "dependencies": {
     "argv": "0.0.2",
-    "bootstrap": "^3.3.2",
+    "bootstrap": "^3.3.7",
     "chalk": "2.3.0",
     "cheerio": "^1.0.0-rc.2",
-    "commander": "^2.12.0",
+    "commander": "^2.15.0",
     "csv": "^2.0.0",
     "datapackage-query": "^0.1.6",
     "datapackage-read": "^0.2.2",
-    "es6-promise": "^4.1.1",
+    "es6-promise": "^4.2.4",
     "fs": "0.0.1-security",
     "good": "^5.1.2",
     "good-console": "^4.1.0",
     "hapi": "^8.4.0",
     "hapi-json-view": "^2.1.0",
-    "inquirer": "^4.0.1",
+    "inquirer": "^4.0.2",
     "mkdir": "0.0.2",
-    "moment": "^2.19.4",
+    "moment": "^2.21.0",
     "underscore": "*",
     "wkhtmltopdf": "^0.3.4"
   },
   "devDependencies": {
-    "mocha": "^4.0.1"
+    "mocha": "^4.1.0"
   },
   "bugs": {
     "url": "https://github.com/bnvk/Conjuror/issues"

@@ -7,15 +7,19 @@ var inquirer  = require('inquirer')
 var _         = require('underscore')
 var chalk     = require('chalk')
 var read      = require('datapackage-read')
+var moment    = require('moment')
 
 var config = require('../lib/conjuror.config.js')
 var Conjuror = require('../lib/conjuror.basic.js')
 
 // Load Conjuror Modules
-Conjuror.recipes = require('../lib/conjuror.recipes.js')
+Conjuror.Recipes = require('../lib/conjuror.recipes.js')
 Conjuror.Date = require('../lib/conjuror.date.js')
 Conjuror.Trim = require('../lib/conjuror.trim.js')
 Conjuror.Search = require('../lib/conjuror.search.js')
+
+// Defaults
+var default_date = moment().format('YYYY-MM-01')
 
 // CLI Items
 var questions = [{
@@ -26,7 +30,8 @@ var questions = [{
   },{
     type: 'input',
     name: 'date',
-    message: 'Specify date to filter by'
+    message: 'Specify date to filter by',
+    default: default_date
   },{
     type: 'input',
     name: 'trim',

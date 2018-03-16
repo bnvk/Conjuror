@@ -12,7 +12,7 @@ var config = require('../lib/conjuror.config.js')
 var Conjuror = require('../lib/conjuror.basic.js')
 
 // Load Conjuror Modules
-Conjuror.recipes = require('../lib/conjuror.recipes.js')
+Conjuror.Recipes = require('../lib/conjuror.recipes.js')
 Conjuror.Date = require('../lib/conjuror.date.js')
 Conjuror.Trim = require('../lib/conjuror.trim.js')
 Conjuror.Search = require('../lib/conjuror.search.js')
