@@ -35,7 +35,7 @@ var questions = [{
         date = date.subtract(3, 'days')
       }
       else if (val === 'other') {
-        // FIXME: need to add a way to handle alternate
+        // TODO: need to add a way to handle alternate
         date = date
       }
 
@@ -77,7 +77,6 @@ var questions = [{
   }
 ]
 
-
 function processProjectDetails(csv_data, csv_file) {
 
   // Examine data
@@ -111,7 +110,9 @@ function processProjectDetails(csv_data, csv_file) {
     })
 
     // Refine (rate)
-    questions[5].choices.sort(function compareNumbers(a, b) { return a - b })
+    questions[5].choices.sort(function compareNumbers(a, b) {
+        return a - b
+    })
 
     // Run CLI
     runApp(csv_file)
@@ -123,18 +124,21 @@ function processProjectDetails(csv_data, csv_file) {
 function runApp(csv_file) {
 
   // Run CLI
-  inquirer.prompt(questions, function(answers) {
-
-    // Convert to CSV
-    // Add quotes so that the string escapes commas.
-    // TODO: probably escape other characters as well.
+  inquirer.prompt(questions).then(answers => {
+    // Prepare for CSV
+    // TODO: make dynamic based on datapackage spec values
+    answers.date        = '"' + answers.date + '"'
     answers.description = '"' + answers.description + '"'
-    var entryData = '\n' + _.values(answers).join(',')
+    answers.project     = '"' + answers.project + '"'
+    answers.location    = '"' + answers.location + '"'
+    var entryData = _.values(answers).join(',') + '\n'
 
     // Save entry
-    fs.appendFile(csv_file, entryData, function (err) {
-      if (err) throw err
-      console.log(chalk.green('Hooray, added the following:'))
+    fs.appendFile(csv_file, entryData, function(err) {
+      if (err) {
+        throw err
+      }
+      console.log(chalk.green('You have tracked the following:\n'))
       console.log(chalk.blue(entryData))
     })
   })
@@ -173,10 +177,9 @@ Conjuror.getIngredients(config.get_file_path(), function(config) {
           processProjectDetails(csv_data, json_data.resources[0].url)
 
         }).catch(function(error) {
-          console.log(chalk.red("Error while Twirling: "), error)
+          console.log(chalk.red("Error in readManuscript: "), error)
           if (callback) return callback(Error)
         })
     })
   })
-
 })
