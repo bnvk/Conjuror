@@ -30,7 +30,6 @@
     "csv": "^2.0.0",
     "datapackage-query": "^0.1.6",
     "datapackage-read": "^0.2.2",
-    "es6-promise": "^4.2.4",
     "fs": "0.0.1-security",
     "good": "^5.1.2",
     "good-console": "^4.1.0",
