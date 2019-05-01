@@ -88,6 +88,7 @@ function runOutput() {
     })
 
     inquirer.prompt(questions).then(answers => {
+
       var app_path = __filename.replace('cli/output.js', '')
 
       var args = {

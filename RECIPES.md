@@ -54,6 +54,13 @@ Will be "operations" that get performed on a given line of data or in reference 
 
 An HTML view (or other formats?) to inject the processed operations into. Currently this is just the boring-ish CSV data in an HTML `<table>` view
 
-****
+---
 
-My current thinking on recipes is making them relatively "sculpted" by developers, as playing with the code towards this, it's going to involve HTML templates and various operations! I've added a folder `recipes/invoices/` and `recipes/expenses/`
+My current thinking on recipes is making them relatively "sculpted" by
+developers, as playing with the code towards this, it's going to involve HTML
+templates and various operations! I've added a folder `recipes/invoices/` and
+`recipes/expenses/`
+
+Make nice barcharts with Wunderbar lib https://github.com/gribnoysup/wunderbar 
+                                       
+                                       
