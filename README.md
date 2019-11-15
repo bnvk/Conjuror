@@ -76,16 +76,21 @@ The following examples are formats of dates values you can pass using the `--dat
 - Exact - `2015-09-04` gets all values since date
 - Range - `2015-09-04:to:2015-11-15` selects between two exact values
 
-
-The above example should have outputted an HTML rendering of your the entries parsed from your data. The output will be located in `output/Feb Invoice.html`
+The above example should have outputted an HTML rendering of your the entries
+parsed from your data. The output will be located in `output/Feb Invoice.html`
 
 **Note: regarding PDF export**
 
-To generate PDF outputs, you need to install [wkhtmltopdf](http://wkhtmltopdf.org/downloads.html) for your operating system on Debian that is done with `sudo apt-get install wkhtmltopdf`
+To generate PDF outputs, you need to install
+[wkhtmltopdf](http://wkhtmltopdf.org/downloads.html) for your operating system
+on Debian that is done with `sudo apt-get install wkhtmltopdf`
 
 
 ### Why The Magical Name & Terminology?
 
-Well, there is that quote by Asimov about technology... there is also the [Cyber Wizard Institute](https://github.com/CyberWizardInstitute) which you should check out... and I really wanted to use this icon of a magical bearded wizard which came from my friend Max who is obsessed with JS
+Well, there is that quote by Asimov about technology... there is also the
+[Cyber Wizard Institute](https://github.com/CyberWizardInstitute) which you
+should check out... and I really wanted to use this icon of a magical bearded
+wizard.
 
 ![Made in Berlin](images/Made-in-Berlin.png)
