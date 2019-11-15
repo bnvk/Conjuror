@@ -22,7 +22,7 @@ var questions = [{
     type: 'list',
     name: 'input',
     choices: [],
-    message: 'Select a project to run a report'
+    message: 'Select project to run report'
   },{
     type: 'input',
     name: 'output',
@@ -81,14 +81,19 @@ var questions = [{
 function runOutput() {
 
   // Check for Input
-  Conjuror.getIngredients(config.get_file_path(), function(config) {
+  Conjuror.getIngredients(config.get_file_path(), function(config_data) {
+    console.log(config_data)
 
-    _.each(config.projects, function(project, key) {
+    // New Invoice Number
+    var new_count = config.new_invoice_count(config_data.user.invoice_count + 1)
+    questions[4].default = new_count
+
+    // Show Projects
+    _.each(config_data.projects, function(project, key) {
       questions[0].choices.push(project.path)
     })
 
     inquirer.prompt(questions).then(answers => {
-
       var app_path = __filename.replace('cli/output.js', '')
 
       var args = {
@@ -98,7 +103,10 @@ function runOutput() {
         app_path: app_path
       }
 
+      // Make Output
       Conjuror.Grow(args)
+ 
+      // TODO need to update Config (user.invoice_count)
     })
   })
 }

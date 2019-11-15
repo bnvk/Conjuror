@@ -42,6 +42,11 @@ var questions = [{
     name: "website",
     message: "Where on the world wide web do you call home?",
     default: 'https://magic-lab.org'
+  },{
+    type: "input",
+    name: "invoice_count",
+    message: "Start invoice numbers at",
+    default: '00000'
   }
 ]
 
