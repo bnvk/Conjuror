@@ -23,6 +23,8 @@
   ],
   "dependencies": {
     "@hapi/hapi": "^18.4.0",
+    "@hapi/good": "^8.2.4",
+    "@hapi/good-console": "^8.1.2",
     "argv": "0.0.2",
     "bootstrap": "^3.4.1",
     "chalk": "2.3.0",
@@ -32,8 +34,6 @@
     "datapackage-query": "^0.1.8",
     "datapackage-read": "^0.2.2",
     "fs": "0.0.1-security",
-    "good": "^5.1.2",
-    "good-console": "^4.1.0",
     "inquirer": "^4.0.2",
     "mkdir": "0.0.2",
     "moment": "^2.24.0",
