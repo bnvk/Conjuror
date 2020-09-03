@@ -22,7 +22,7 @@
     "Simon Vansintjan <svansintjan@gmail.com>"
   ],
   "dependencies": {
-    "@hapi/hapi": "^18.4.0",
+    "@hapi/hapi": "^19.1.1",
     "@hapi/good": "^8.2.4",
     "@hapi/good-console": "^8.1.2",
     "argv": "0.0.2",
